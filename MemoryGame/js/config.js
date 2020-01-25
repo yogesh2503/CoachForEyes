@@ -1,0 +1,1 @@
+const LVLTIMER = 90;//level per second

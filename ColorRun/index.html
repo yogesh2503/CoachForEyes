@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Color Run</title>
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <style type="text/css">
+    body {
+      margin: 0px;
+      padding: 0px;
+      position: fixed;
+    }
+
+    .wrapper {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      flex-flow: column nowrap;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .element {
+      width: 200px;
+      height: 80px;
+      background-color: lightyellow;
+      border: 2px dashed purple;
+    }
+  </style>
+</head>
+
+<body>
+  <script src="./basic/three.min.js"></script>
+  <script src="./basic/three-ui.min.js"></script>
+  <script src="./basic/asset-loader.min.js"></script>
+  
+  <script src="./js/config.js"></script>
+  <script src="./js/Basic.js"></script>
+  <script src="./js/colorrun.js"></script>
+  <script src="./js/Start.js"></script>
+  <div id="myContent0" class="wrapper">
+    <div id="myContent"></div>
+  </div>
+  <script src="https://connect.facebook.net/en_US/fbinstant.6.2.js"></script>
+  <div id="turn"></div>
+  <div class="fb-like" data-share="true" data-width="450" data-show-faces="true"> </div>
+  <script type="text/javascript">
+    window.onload = function () {
+      init();
+    }
+  </script>
+</body>
+
+</html>
