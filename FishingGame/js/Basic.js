@@ -118,6 +118,12 @@ function DrawTransScal(tex, x, y, sx, sy, z, t) {
     tex.alpha = t;
 }
 
+function DrawTransScalB(tex, sx, sy, z, t) {
+    tex.width = sx * z;
+    tex.height = sy * z;
+    tex.alpha = t;
+}
+
 function DrawTextureAlign(tex, x, y, ax, ay) {
     tex.x = x;
     tex.y = y;
@@ -140,15 +146,18 @@ function dealWithKeyboard(e) {
     switch (e.keyCode) {
         case 37: //Left
             sx = sx - vs;
+            mFish.direction("left");
             break;
         case 38: //Up
-
+            mFish.direction("up");
             sz = sz + vs;
             break;
         case 39: //right
+            mFish.direction("right");
             sx = sx + vs;
             break;
         case 40: //DOWN
+            mFish.direction("down");
             sz = sz - vs;
             break;
         case 65: //A
@@ -185,8 +194,8 @@ function dealWithKeyboard(e) {
         case 110: //.
             break;
     }
-    // console.log("sx = "+sx+ ", sy = "+sy+", sz ="+ sz);
-    // console.log(e.keyCode + " rx = "+rx+ ", ry = "+ry+", rz ="+ rz);
+    console.log("sx = " + sx + ", sy = " + sy + ", sz =" + sz);
+    console.log(e.keyCode + " rx = " + rx + ", ry = " + ry + ", rz =" + rz);
 
 }
 
@@ -223,7 +232,7 @@ function createPlanMesh() {
 }
 
 function createPlayer() {
-    var material = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, blending: THREE.CustomBlending, blendSrc: THREE.OneFactor, blendDst: THREE.OneMinusSrcAlphaFactor });
+    var material = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.5 });
     var mashs = new THREE.Mesh(new THREE.PlaneBufferGeometry(2, 1, 1, 1), material);
     mashs.no = 0;
     // scene.add(mashs);

@@ -10,11 +10,15 @@ var CANVAS_WIDTH = 480,
 var mTex_fonts = [],
     mTex_But = [],
     mTex_Heart = [],
+    mTex_Arrow = [],
+
     mTex_EHeart = [];
+const DIRECTIONS = ["left", "down", "right", "up"];
+var mTex_Right, mTex_Wrong;
 var timeoutHandle;
 var butArry = [],
     scoreStrip = [];
-var tex_wrong, tex_wright, tex_fish, tex_Leader;
+var tex_wrong, tex_wright, tex_fish, tex_Leader, tex_fishM, tex_LeaderM;
 var mFish;
 var raycaster = new THREE.Raycaster();
 
@@ -70,23 +74,11 @@ function init() {
     function onError() {}
     var textureLoader = new THREE.TextureLoader(manager);
 
-    tex_wrong = textureLoader.load("assets/wrong.png");
-    tex_wright = textureLoader.load("assets/wright.png");
+
     tex_fish = textureLoader.load("assets/small.png");
     tex_Leader = textureLoader.load("assets/leader.png");
-
-
-    // var texture = new THREE.TextureLoader().load("assets/tile.jpg");
-    // texture.wrapS = THREE.RepeatWrapping;
-    // texture.wrapT = THREE.RepeatWrapping;
-    // texture.repeat.set(4, 8);
-
-
-    // mPlanBackground = createPlanMesh();
-    // scene.add(mPlanBackground);
-    // mPlanBackground.traverse(function(child) { if (child.isMesh) { child.material.map = texture; } });
-    // mPlanBackground.scale.set(30, 120, 1);
-    // mPlanBackground.visible = true;
+    tex_fishM = textureLoader.load("assets/smallM.png");;
+    tex_LeaderM = textureLoader.load("assets/leaderM.png");
 
 
 
@@ -97,7 +89,9 @@ function init() {
     AssetLoader.add.image('assets/heart.png');
     AssetLoader.add.image('assets/heartempty.png');
     AssetLoader.add.image('assets/strip.png');
-
+    AssetLoader.add.image('assets/wrong.png');
+    AssetLoader.add.image('assets/right.png');
+    AssetLoader.add.image('assets/arrow.png');
 
     AssetLoader.progressListener = function(progress) {
         console.info('Progress: ' + (progress * 100) + '%');
@@ -118,12 +112,26 @@ function init() {
             mTex_EHeart.push(loadUIS('assets/heartempty.png', 15 + i * 30, 16));
         }
 
-
         for (var i = 0; i < 3; i++) {
             butArry.push(loadUIScal('assets/but.png', 120 - i * 120, 206, .4, .6));
             if (i == 1)
                 butArry[i].width *= 1.2;
         }
+
+        mTex_Right = loadUIS('assets/right.png', 40, 40, 0);
+        mTex_Wrong = loadUIS('assets/wrong.png', 40, 40, 0);
+        mTex_Right.anchor.x = mTex_Wrong.anchor.x = ThreeUI.anchors.left; // Default
+        for (let i = 0; i < 4; i++) {
+            mTex_Arrow.push(loadUI('assets/arrow.png', -64 + i * 64, 40, 0));
+            mTex_Arrow[i].anchor.y = ThreeUI.anchors.bottom;
+        }
+
+        mTex_Arrow[1].rotation = 90; //down
+        mTex_Arrow[0].rotation = 180; //left
+        mTex_Arrow[3].rotation = 270; //up
+        mTex_Arrow[3].x = 0;
+        mTex_Arrow[3].y = 104; //(0, 128);
+
         var noofStrip = 10;
         console.log("noofStrip " + noofStrip);
         for (var i = 0; i < noofStrip; i++) {
@@ -193,18 +201,18 @@ function Draw() {
                 setScreen(GAMEMENU);
             }
             break;
-        case COLORRUN:
-            break;
+
         case GAMEFISH:
             mFish.draw();
             break;
         case GAMEOVER:
         case GAMELEVEL:
+
             for (var i = 0; i < 3; i++) {
                 if (i == 1) {
-                    DrawTransScal(butArry[i], 120 - i * 120, 206, 128, 34, mSel == 1 + i ? 1.1 : 1, mSel == 1 + i ? 0.5 : 1);
+                    DrawTransScal(butArry[i], 120 - i * 120, 266, 128, 34, mSel == 1 + i ? 1.1 : 1, mSel == 1 + i ? 0.5 : 1);
                 } else {
-                    DrawTransScal(butArry[i], 120 - i * 120, 206, 90, 34, mSel == 1 + i ? 1.1 : 1, mSel == 1 + i ? 0.5 : 1);
+                    DrawTransScal(butArry[i], 120 - i * 120, 266, 90, 34, mSel == 1 + i ? 1.1 : 1, mSel == 1 + i ? 0.5 : 1);
                 }
             }
             break;
@@ -239,7 +247,7 @@ function touchEvent(e, type) {
                 coords.x *= scale;
                 coords.y *= scale;
             }
-            console.log("e.touches.length = " + e.touches.length)
+            // console.log("e.touches.length = " + e.touches.length)
         } else {
             mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
             mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
@@ -247,26 +255,18 @@ function touchEvent(e, type) {
             coords.x = coords.x - (window.innerWidth - gameUI.gameCanvas.getBoundingClientRect().width) / 2;
             coords.x *= scale;
             coords.y *= scale;
-
-
-
-
             var elem = renderer.domElement,
                 boundingRect = elem.getBoundingClientRect(),
                 x = (event.clientX - boundingRect.left) * (elem.width / boundingRect.width),
                 y = (event.clientY - boundingRect.top) * (elem.height / boundingRect.height);
             mouse.x = (x / CANVAS_WIDTH) * 2 - 1;
             mouse.y = -(y / CANVAS_HEIGHT) * 2 + 1;
-
-
-
-
         }
         raycaster.setFromCamera(mouse, camera);
     }
 
 
-    console.log("[" + Math.floor(coords.x) + ", " + Math.floor(coords.y) + "] ~~~ [" + mouse.x.toFixed(2) + ", " + mouse.y.toFixed(2) + "]");
+    // console.log("[" + Math.floor(coords.x) + ", " + Math.floor(coords.y) + "] ~~~ [" + mouse.x.toFixed(2) + ", " + mouse.y.toFixed(2) + "]");
     switch (GameScreen) {
         case GAMEMENU:
             mSel = 0;
@@ -311,15 +311,12 @@ function touchEvent(e, type) {
                         setScreen(GAMEMENU);
                         break;
                     case 2:
-                        if (GameScreen == GAMEOVER || mFish.level >= 3) {
+                        console.log(mFish.life + "  mFish.life  " + mFish.level);
+                        if (mFish.life <= 0 || mFish.level >= 8) {
 
                         } else {
                             mFish.numberofWin = 0;
-                            // mFish.life = 3;
-                            mFish.NumCols++;
-                            mFish.NumRows = mFish.NumCols;
                             mFish.level++;
-                            // mFish.timer = 0;
                             setScreen(GAMEFISH);
                         }
 
@@ -363,7 +360,11 @@ function setScreen(scr) {
     mFish.plans.forEach(element => {
         element.visible = false;
     });
-
+    mTex_Arrow.forEach(element => {
+        element.visible = false;
+    });
+    mTex_Wrong.visible = mTex_Right.visible = false;
+    mFish.player.visible = false;
     switch (GameScreen) {
         case GAMEMENU:
             DrawLbl(mTex_fonts[ff++], "Welcome to\n\nFISHING GAME", 0, -220, "#154c86", 28);
@@ -374,8 +375,13 @@ function setScreen(scr) {
             mFish.plans[3].position.set(-5, -12, 0);
             for (let i = 0; i < 4; i++) {
                 mFish.plans[i].visible = true;
-
+                mFish.plans[i].rotation.set(0, 0, 0);
+                mFish.plans[i].traverse(function(child) { if (child.isMesh) { child.material.map = tex_fish; } });
             }
+            mFish.player.rotation.set(0, 0, 0);
+            mFish.player.traverse(function(child) { if (child.isMesh) { child.material.map = tex_Leader; } });
+            mFish.player.visible = true;
+            mFish.player.position.set(0, 0, 0);
             break;
         case COLORRUN:
             break;
@@ -394,20 +400,21 @@ function setScreen(scr) {
                 DrawTextureAlign(mTex_Heart[i], 105 + i * 25, -200, ThreeUI.anchors.center, ThreeUI.anchors.center);
             }
             DrawLbl(mTex_fonts[ff++], "GAMEOVER\n---", 0, -250, FONTSCORE, 25, "center");
-            if (GameScreen == GAMEOVER) {
-
+            if (mFish.life <= 0) {
                 DrawLbl(mTex_fonts[ff++], "Congratulations!\n\nFinal Score " + total + " points", 0, -200, FONTSCORE, 20, "center");
             } else {
                 DrawLbl(mTex_fonts[ff++], "Congratulations! you save", -50, -190, FONTSCORE, 24, "center");
                 DrawLbl(mTex_fonts[ff++], "Bonus " + (mFish.life * 20) + " Point!\n\nFinal Score " + total + " points", 0, -130, FONTSCORE, 20, "center");
             }
-
-            DrawLbl(mTex_fonts[ff++], (GameScreen == GAMEOVER || mFish.level >= 3) ? "Other Game" : "Next Game", 0, 212, BUTTONFONT, 22, "center");
-            DrawLbl(mTex_fonts[ff++], "Replay", -120, 212, BUTTONFONT, 22, "center");
-            DrawLbl(mTex_fonts[ff++], "Home", 120, 212, BUTTONFONT, 22, "center");
+            DrawLbl(mTex_fonts[ff++], (mFish.life <= 0 || mFish.level >= 8) ? "Other Game" : "Next Game", 0, 272, BUTTONFONT, 22, "center");
+            DrawLbl(mTex_fonts[ff++], "Replay", -120, 272, BUTTONFONT, 22, "center");
+            DrawLbl(mTex_fonts[ff++], "Home", 120, 272, BUTTONFONT, 22, "center");
             break;
         case GAMEFISH:
             mFish.gamereset();
+            mTex_Arrow.forEach(element => {
+                element.visible = true;
+            });
             break;
     }
 }
