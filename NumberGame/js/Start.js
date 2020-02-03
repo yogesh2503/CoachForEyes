@@ -8,18 +8,16 @@ var CANVAS_WIDTH = 480,
     P_CONST = .5621,
     delta = 0; //.56205
 var mTex_fonts = [],
-    mTex_But = [],
     mTex_Heart = [],
-    mTex_Arrow = [],
-
-    mTex_EHeart = [];
-const DIRECTIONS = ["left", "down", "right", "up"];
-var mTex_Right, mTex_Wrong;
+    mTex_EHeart = [],
+    topPlan, mTex_LooseLife;
 var timeoutHandle;
 var butArry = [],
+    butRedArry = [],
+    animGif = Array(6),
     scoreStrip = [];
-var tex_wrong, tex_wright, tex_fish, tex_Leader, tex_fishM, tex_LeaderM;
-var mFish;
+var tex_wrong, tex_right, tex_empty;
+var mNumbers;
 var raycaster = new THREE.Raycaster();
 
 function setDesktop() {
@@ -51,7 +49,7 @@ function init() {
     MAXMOVE = (CANVAS_WIDTH / CANVAS_HEIGHT) * .87;
     camera.rotation.set(0, 0, 0);
     camera.position.set(0, 0, 125);
-    scene.background = new THREE.Color(0xa7d5ef);
+    scene.background = new THREE.Color(0xf6f6f6);
     renderer.setClearColor(0xaaaaaa, 1);
     gameUI = new ThreeUI(renderer.domElement, 720);
 
@@ -74,24 +72,34 @@ function init() {
     function onError() {}
     var textureLoader = new THREE.TextureLoader(manager);
 
+    tex_empty = textureLoader.load("assets/empty.png");
 
-    tex_fish = textureLoader.load("assets/small.png");
-    tex_Leader = textureLoader.load("assets/leader.png");
-    tex_fishM = textureLoader.load("assets/smallM.png");;
-    tex_LeaderM = textureLoader.load("assets/leaderM.png");
+    var texture = new THREE.TextureLoader().load("assets/tile.jpg");
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set(4, 8);
 
 
+    mPlanBackground = createPlanMesh();
+    scene.add(mPlanBackground);
+    mPlanBackground.traverse(function(child) { if (child.isMesh) { child.material.map = texture; } });
+    mPlanBackground.scale.set(80, 160, 50);
+    mPlanBackground.visible = true;
+    mPlanBackground.position.set(0, 10, 0);
 
-    mFish = new Fish();
+    mNumbers = new Numbers();
     AssetLoader.add.webFont('HanaleiFill', 'js/font.css');
-    // AssetLoader.add.image('assets/logo.png');
+    AssetLoader.add.image('assets/but0.png');
     AssetLoader.add.image('assets/but.png');
     AssetLoader.add.image('assets/heart.png');
     AssetLoader.add.image('assets/heartempty.png');
     AssetLoader.add.image('assets/strip.png');
     AssetLoader.add.image('assets/wrong.png');
     AssetLoader.add.image('assets/right.png');
-    AssetLoader.add.image('assets/arrow.png');
+    for (let i = 0; i < animGif.length; i++) {
+        AssetLoader.add.image('assets/' + i + '.png');
+    }
+
 
     AssetLoader.progressListener = function(progress) {
         console.info('Progress: ' + (progress * 100) + '%');
@@ -105,44 +113,39 @@ function init() {
         mTex_logo.visible = false;
         mTex_arrow = Array(2);
         mTex_sound = Array(2);
-        mTex_But.push(loadUI('assets/but.png', 0, -12, 0));
-        mTex_But.push(loadUI('assets/but.png', 0, -12, 0));
         for (let i = 0; i < 3; i++) {
             mTex_Heart.push(loadUIS('assets/heart.png', 15 + i * 30, 16));
             mTex_EHeart.push(loadUIS('assets/heartempty.png', 15 + i * 30, 16));
         }
+        mTex_LooseLife = loadUI('assets/heart.png', 0, -100);
 
+        tex_wrong = loadUI('assets/wrong.png', 0, -100);
+        tex_right = loadUI('assets/right.png', 0, -100);
+        DrawTextureAlign(tex_wrong, 60, 50, ThreeUI.anchors.left, ThreeUI.anchors.bottom);
+        DrawTextureAlign(tex_right, 60, 50, ThreeUI.anchors.left, ThreeUI.anchors.bottom);
+
+        tex_right.width = tex_right.height = tex_wrong.width = tex_wrong.height = 64;
+
+        tex_wrong.visible = tex_right.visible = false;
         for (var i = 0; i < 3; i++) {
             butArry.push(loadUIScal('assets/but.png', 120 - i * 120, 206, .4, .6));
+            butRedArry.push(loadUIScal('assets/but0.png', 120 - i * 120, 206, .4, .6));
             if (i == 1)
                 butArry[i].width *= 1.2;
         }
-
-        mTex_Right = loadUIS('assets/right.png', 40, 40, 0);
-        mTex_Wrong = loadUIS('assets/wrong.png', 40, 40, 0);
-        mTex_Right.anchor.x = mTex_Wrong.anchor.x = ThreeUI.anchors.left; // Default
-        for (let i = 0; i < 4; i++) {
-            mTex_Arrow.push(loadUI('assets/arrow.png', -64 + i * 64, 40, 0));
-            mTex_Arrow[i].anchor.y = ThreeUI.anchors.bottom;
-        }
-
-        mTex_Arrow[1].rotation = 90; //down
-        mTex_Arrow[0].rotation = 180; //left
-        mTex_Arrow[3].rotation = 270; //up
-        mTex_Arrow[3].x = 0;
-        mTex_Arrow[3].y = 104; //(0, 128);
-
-        var noofStrip = 10;
+        var noofStrip = 20;
         console.log("noofStrip " + noofStrip);
-        for (var i = 0; i < noofStrip; i++) {
-            scoreStrip.push(loadUIScal('assets/strip.png', 0, -32 + i * 32, 2, 2));
+        for (var i = 0; i < 13; i++) {
+            scoreStrip.push(loadUIScal('assets/strip.png', 0, -132 + i * 32, 2, 2));
         }
 
-        for (var i = 0; i < noofStrip + 25; i++) {
+        for (var i = 0; i < noofStrip; i++) {
             mTex_fonts[i] = createTexts('100', 20, '#fff', ThreeUI.anchors.center, ThreeUI.anchors.center, 'center', 'HanaleiFill');
         }
 
-
+        for (let i = 0; i < animGif.length; i++) {
+            animGif[i] = loadUIScal('assets/' + i + '.png', 0, 0, 1, 1.2);
+        }
         mTex_LandScape = loadUIRect();
         lndScp = createTexts('Have to play in \n potrait Mode', 50, '#fff', ThreeUI.anchors.center, ThreeUI.anchors.center, 'center', 'HanaleiFill');
         lndScp.parent = mTex_LandScape;
@@ -201,22 +204,17 @@ function Draw() {
                 setScreen(GAMEMENU);
             }
             break;
-
-        case GAMEFISH:
-            mFish.draw();
+        case GAMENUMBERS:
+            mNumbers.draw();
             break;
         case GAMEOVER:
         case GAMELEVEL:
             for (var i = 0; i < 3; i++) {
-                if (i == 1) {
-                    DrawTransScal(butArry[i], 120 - i * 120, 266, 128, 34, mSel == 1 + i ? 1.1 : 1, mSel == 1 + i ? 0.5 : 1);
-                } else {
-                    DrawTransScal(butArry[i], 120 - i * 120, 266, 90, 34, mSel == 1 + i ? 1.1 : 1, mSel == 1 + i ? 0.5 : 1);
-                }
+                DrawTransScal(butArry[i], 120 - i * 120, 300, 90, 48, mSel == 1 + i ? 1.1 : 1, mSel == 1 + i ? 0.5 : 1);
             }
             break;
         case GAMEMENU:
-            DrawTransScal(mTex_But[0], 0, 220, 90, 44, mSel == 1 ? 1.1 : 1, mSel == 1 ? 0.5 : 1);
+            DrawTransScal(butArry[0], 0, 193, 100, 40, mSel == 1 ? 1.1 : 1, mSel == 1 ? 0.5 : 1);
             break;
     }
     Counter++;
@@ -246,7 +244,7 @@ function touchEvent(e, type) {
                 coords.x *= scale;
                 coords.y *= scale;
             }
-            // console.log("e.touches.length = " + e.touches.length)
+            console.log("e.touches.length = " + e.touches.length)
         } else {
             mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
             mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
@@ -254,12 +252,20 @@ function touchEvent(e, type) {
             coords.x = coords.x - (window.innerWidth - gameUI.gameCanvas.getBoundingClientRect().width) / 2;
             coords.x *= scale;
             coords.y *= scale;
+
+
+
+
             var elem = renderer.domElement,
                 boundingRect = elem.getBoundingClientRect(),
                 x = (event.clientX - boundingRect.left) * (elem.width / boundingRect.width),
                 y = (event.clientY - boundingRect.top) * (elem.height / boundingRect.height);
             mouse.x = (x / CANVAS_WIDTH) * 2 - 1;
             mouse.y = -(y / CANVAS_HEIGHT) * 2 + 1;
+
+
+
+
         }
         raycaster.setFromCamera(mouse, camera);
     }
@@ -269,26 +275,22 @@ function touchEvent(e, type) {
     switch (GameScreen) {
         case GAMEMENU:
             mSel = 0;
-            bounds = mTex_But[0].getBounds();
+            bounds = butArry[0].getBounds();
             if (ThreeUI.isInBoundingBox(coords.x, coords.y, bounds.x, bounds.y, bounds.width, bounds.height)) {
                 mSel = 1;
-            }
-            bounds = mTex_But[1].getBounds();
-            if (ThreeUI.isInBoundingBox(coords.x, coords.y, bounds.x, bounds.y, bounds.width, bounds.height)) {
-                mSel = 2;
             }
             if (type == 2) {
                 switch (mSel) {
                     case 1:
-                        mFish.numberofWin = 0;
-                        mFish.life = 3;
-                        mFish.level = 1;
-                        mFish.NumRows = mFish.NumCols = 3;
-                        mFish.timer = 0;
-                        for (let i = 0; i < mFish.levelScore.length; i++) {
-                            mFish.levelScore[i] = 0;
+                        mNumbers.numberofWin = 0;
+                        mNumbers.life = 3;
+                        mNumbers.level = 1;
+                        mNumbers.NumRows = mNumbers.NumCols = 3;
+                        mNumbers.timer = 0;
+                        while (mNumbers.levelScore.length > 0) {
+                            mNumbers.levelScore.pop();
                         }
-                        setScreen(GAMEFISH);
+                        setScreen(GAMENUMBERS);
                         break;
 
                 }
@@ -310,37 +312,31 @@ function touchEvent(e, type) {
                         setScreen(GAMEMENU);
                         break;
                     case 2:
-                        console.log(mFish.life + "  mFish.life  " + mFish.level);
-                        if (mFish.life <= 0 || mFish.level >= 8) {
+                        if (mNumbers.life <= 0 || mNumbers.timer >= LVLTIMER) {
 
                         } else {
-                            mFish.numberofWin = 0;
-                            mFish.level++;
-                            setScreen(GAMEFISH);
+                            mNumbers.numberofWin = 0;
+                            mNumbers.NumRows = mNumbers.NumCols;
+                            mNumbers.level++;
+                            setScreen(GAMENUMBERS);
                         }
-
                         break;
                     case 3:
-                        mFish.numberofWin = 0;
-                        mFish.life = 3;
-                        mFish.levelScore[mFish.level - 1] = 0;
-                        mFish.timer = 0;
-                        setScreen(GAMEFISH);
+                        if (mNumbers.life <= 0 || mNumbers.timer >= LVLTIMER) {
+                            mNumbers.life = 3;
+                            mNumbers.timer = 0;
+                        }
+                        mNumbers.numberofWin = 0;
+                        mNumbers.levelScore.pop();
+                        setScreen(GAMENUMBERS);
                         break;
                 }
                 mSel = 0;
-                //setScreen(ColorRun);
             }
             break;
-        case COLORRUN:
-            if (type == 0) {
-                if (gameUI.gameCanvas.getBoundingClientRect().width / 2 < coords.x) {} else {}
-            }
+        case GAMENUMBERS:
+            mNumbers.handle_Gameplay(e, type);
             break;
-        case GAMEFISH:
-            mFish.handle_Gameplay(e, type);
-            break;
-
     }
 }
 
@@ -351,77 +347,73 @@ function setScreen(scr) {
     scoreStrip.forEach(element => { element.visible = false; });
     mTex_fonts.forEach(element => { element.visible = false; });
     butArry.forEach(element => { element.visible = false; });
-    mTex_But.forEach(element => { element.visible = false; });
+    butRedArry.forEach(element => { element.visible = false; });
+    animGif.forEach(element => { element.visible = false; });
+    tex_wrong.visible = tex_right.visible = false;
+    mTex_LooseLife.visible = false;
     for (let i = 0; i < 3; i++) {
         mTex_Heart[i].visible = false;
         mTex_EHeart[i].visible = false;
     }
-    mFish.plans.forEach(element => {
+    mNumbers.plans.forEach(element => {
         element.visible = false;
     });
-    mTex_Arrow.forEach(element => {
-        element.visible = false;
-    });
-    mTex_Wrong.visible = mTex_Right.visible = false;
-    mFish.player.visible = false;
+    mTex_fonts[2].rotation = 0;
+    mTex_fonts[3].rotation = 0;
     switch (GameScreen) {
         case GAMEMENU:
-            DrawLbl(mTex_fonts[ff++], "Welcome to\n\nFISHING GAME", 0, -220, "#154c86", 28);
-            DrawLbl(mTex_fonts[ff++], "Play", 0, 228, BUTTONFONT, 22);
-            mFish.plans[0].position.set(-13, 15, 0);
-            mFish.plans[1].position.set(10, 8, 0);
-            mFish.plans[2].position.set(13, -5, 0);
-            mFish.plans[3].position.set(-5, -12, 0);
-            for (let i = 0; i < 4; i++) {
-                mFish.plans[i].visible = true;
-                mFish.plans[i].rotation.set(0, 0, 0);
-                mFish.plans[i].traverse(function(child) { if (child.isMesh) { child.material.map = tex_fish; } });
+            MX = 9;
+            DrawLbl(mTex_fonts[ff++], "Welcome to\n\nNUMBER GAME", 0, -220, "#c85a52", 28);
+            DrawLbl(mTex_fonts[ff++], "Play", 0, 200, BUTTONFONT, 22);
+            // mNumbers.plans[0].visible = true;
+            // mNumbers.plans[0].rotation.set(0, 0, Math.PI * .12);
+            // mNumbers.plans[1].visible = true;
+            // mNumbers.plans[1].rotation.set(0, 0, -Math.PI * .12);
+            for (let i = 0; i < mNumbers.plans.length; i++) {
+                mNumbers.plans[i].visible = true;
+                mNumbers.plans[i].rotation.set(0, 0, 0);
+                mNumbers.plans[i].position.set(-16 + i * 16, 0, 0);
             }
-            mFish.player.rotation.set(0, 0, 0);
-            mFish.player.traverse(function(child) { if (child.isMesh) { child.material.map = tex_Leader; } });
-            mFish.player.visible = true;
-            mFish.player.position.set(0, 0, 0);
-            break;
-        case COLORRUN:
+            DrawLbl(mTex_fonts[2], "1", -110, 20, FONTSCORE, 50, "center");
+            // mTex_fonts[2].rotation = -22;
+            DrawLbl(mTex_fonts[3], "6", 110, 20, FONTSCORE, 50, "center");
+            DrawLbl(mTex_fonts[4], "?", 0, 20, FONTSCORE, 50, "center");
+            // mTex_fonts[3].rotation = 22;
+
             break;
         case GAMELEVEL:
         case GAMEOVER:
             var total = 0;
-            for (var i = 0; i < mFish.level; i++) {
-                DrawLbl(mTex_fonts[ff++], (i + 1) + ". " + mFish.levelScore[i], -100, -25 + i * 32, FONTCOLOR, 20, "left");
+            var j = mNumbers.levelScore.length > scoreStrip.length ? (mNumbers.levelScore.length - scoreStrip.length) : 0;
+
+            for (var i = 0; j < mNumbers.levelScore.length; i++, j++) {
+                DrawLbl(mTex_fonts[ff++], (j + 1) + ". " + mNumbers.levelScore[j], -100, -125 + i * 32, FONTCOLOR, 20, "left");
                 scoreStrip[i].visible = true;
-                total += mFish.levelScore[i];
+            }
+            for (var i = 0; i < mNumbers.levelScore.length; i++) {
+                total += mNumbers.levelScore[i];
             }
             for (var i = 0; i < butArry.length; i++) {
                 butArry[i].visible = true;
             }
-
-
-            if (mFish.life <= 0) {
-                DrawLbl(mTex_fonts[ff++], "GAMEOVER\n---", 0, -250, FONTSCORE, 25, "center");
-                DrawLbl(mTex_fonts[ff++], "Congratulations!\n\nFinal Score " + total + " points", 0, -200, FONTSCORE, 20, "center");
-            } else if (mFish.level < 8) {
-                DrawLbl(mTex_fonts[ff++], "Congratulations\n---", 0, -250, FONTSCORE, 25, "center");
-                DrawLbl(mTex_fonts[ff++], "Go to new level", 0, -190, FONTSCORE, 24, "center");
-                DrawLbl(mTex_fonts[ff++], "Final Score " + total + " points", 0, -130, FONTSCORE, 20, "center");
-            } else {
-                for (var i = 0; i < mFish.life; i++) {
-                    DrawTextureAlign(mTex_Heart[i], 105 + i * 25, -200, ThreeUI.anchors.center, ThreeUI.anchors.center);
-                }
-                DrawLbl(mTex_fonts[ff++], "GAMEOVER\n---", 0, -250, FONTSCORE, 25, "center");
-                DrawLbl(mTex_fonts[ff++], "Congratulations! you save", -50, -190, FONTSCORE, 24, "center");
-                DrawLbl(mTex_fonts[ff++], "Bonus " + (mFish.life * 20) + " Point!\n\nFinal Score " + total + " points", 0, -130, FONTSCORE, 20, "center");
+            for (var i = 0; i < mNumbers.life; i++) {
+                DrawTextureAlign(mTex_Heart[i], 105 + i * 27, -260, ThreeUI.anchors.center, ThreeUI.anchors.center);
             }
-            DrawLbl(mTex_fonts[ff++], (mFish.life <= 0 || mFish.level >= 8) ? "Other Game" : "Next Game", 0, 272, BUTTONFONT, 22, "center");
-            DrawLbl(mTex_fonts[ff++], "Replay", -120, 272, BUTTONFONT, 22, "center");
-            DrawLbl(mTex_fonts[ff++], "Home", 120, 272, BUTTONFONT, 22, "center");
+            DrawLbl(mTex_fonts[ff++], "GAMEOVER\n---", 0, -300, FONTSCORE, 25, "center");
+            if (GameScreen == GAMEOVER && mNumbers.life <= 0) {
+                DrawLbl(mTex_fonts[ff++], "Congratulations!\n\nFinal Score " + total + " points", 0, -250, FONTSCORE, 20, "center");
+            } else {
+                DrawLbl(mTex_fonts[ff++], "Congratulations! you save", -50, -250, FONTSCORE, 24, "center");
+                DrawLbl(mTex_fonts[ff++], "Bonus " + (mNumbers.life * 20) + " Point!\n\nFinal Score " + total + " points", 0, -210, FONTSCORE, 20, "center");
+            }
+
+            DrawLbl(mTex_fonts[ff++], (mNumbers.life <= 0 || mNumbers.timer >= LVLTIMER) ? "Other\nGame" : "Next\nGame", 0, 296, BUTTONFONT, 20, "center");
+            DrawLbl(mTex_fonts[ff++], "Replay", -120, 304, BUTTONFONT, 20, "center");
+            DrawLbl(mTex_fonts[ff++], "Home", 120, 304, BUTTONFONT, 20, "center");
             break;
-        case GAMEFISH:
-            mFish.gamereset();
-            mTex_Arrow.forEach(element => {
-                element.visible = true;
-            });
-            DrawLbl(mTex_fonts[4], "Sorry, it's not good !", 0, 200, FONTRED, 25);
+        case GAMENUMBERS:
+            mNumbers.gamereset();
+
             break;
     }
 }

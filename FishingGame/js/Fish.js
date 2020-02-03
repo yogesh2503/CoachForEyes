@@ -17,7 +17,7 @@ class Fish {
         this.player.traverse(function(child) { if (child.isMesh) { child.material.map = tex_Leader; } });
         this.player.visible = true;
         this.group.add(this.player);
-        this.player.scale.set(5, 5, 1);
+        this.player.scale.set(4, 4, 1);
         this.player.position.set(-5, 1, 0);
         this.levelScore = [0, 0, 0, 0, 0, 0, 0, 0, 0];
         this.timer = 0;
@@ -39,6 +39,8 @@ class Fish {
         this.allscore = 0;
     }
     draw() {
+        mTex_fonts[4].visible = this.wrongCounter > 0;
+        this.wrongCounter--;
         for (let i = 0; i < this.plans.length; i++) {
             this.plans[i].position.x += this.vx;
             this.plans[i].position.y += this.vy;
@@ -47,7 +49,7 @@ class Fish {
         this.y += this.vy;
         if (this.level < 5) {
             var val = 40 - this.level * 7;
-            this.player.visible = (this.x > -val && this.x < val && this.y > -val && this.y < val && this.numberofWin < 4);
+            this.player.visible = (this.x > -val && this.x < val && this.y > -val && this.y < val && this.numberofWin < MAX_GOOD_RESPONSES);
             this.player.position.set(this.cx, this.cy, 0);
             // if (this.x > -val && this.x < val && this.y > -val && this.y < val) {
             //     console.log(this.x + "  " + this.y);
@@ -102,7 +104,8 @@ class Fish {
         if (this.levelUpConter > 0) {
             this.levelUpConter--;
             if (this.levelUpConter == 1) {
-                this.points += this.life * 20;
+                if (this.level == 8)
+                    this.points += this.life * 20;
                 this.levelScore[this.level - 1] += this.points;
                 setScreen(GAMEOVER);
             }
@@ -110,6 +113,8 @@ class Fish {
         for (let i = 0; i < mTex_Arrow.length; i++) {
             DrawTransScalB(mTex_Arrow[i], 50, 50, mSel == i + 1 ? 1.1 : 1, mSel == i + 1 ? 0.5 : 1);
         }
+
+
     }
     setClickVaribles() {
         // this.resetPosition();
@@ -118,6 +123,7 @@ class Fish {
         this.timerCount = this.timer;
     }
     resetPosition() {
+        // this.wrongCounter = 0;
         this.isClick = 0;
         for (let i = 0; i < 3; i++) {
             mTex_Heart[i].visible = i < this.life;
@@ -136,8 +142,9 @@ class Fish {
             this.x = (randB > .5 ? MY : -MY);
             this.y = 0;
         }
-        this.vx = -this.x * .02;
-        this.vy = -this.y * .02;
+        var spd = .01 + this.level * .0015;
+        this.vx = -this.x * spd;
+        this.vy = -this.y * spd;
         this.cx = 25 - Math.random() * 50;
         this.cy = 25 - Math.random() * 50;
 
@@ -147,7 +154,7 @@ class Fish {
         }
         this.allx.sort(compRan);
 
-        var numofFish = 4 + this.level * 2;
+        var numofFish = 4 + this.level;
 
         for (let i = 0; i < this.plans.length; i++) {
             if (this.x == 0) {
@@ -248,7 +255,7 @@ class Fish {
     }
     direction(direction) {
         if ((this.isClick == 0 || this.isClick == 1) && GameScreen == GAMEFISH) {
-            console.log(this.player.direction + " direction = " + direction);
+
             mTex_Right.visible = (this.player.direction == direction);
             mTex_Wrong.visible = !mTex_Right.visible;
             this.isClick = 2;
@@ -256,11 +263,13 @@ class Fish {
             if (mTex_Wrong.visible) {
                 this.life--;
                 this.numberofWin = 0;
+                this.wrongCounter = 50;
+                console.log(this.player.direction + " direction = " + direction);
             } else {
                 this.points += 20;
             }
             this.x = this.x = 100;
-            if (this.life <= 0 || this.numberofWin >= 4) {
+            if (this.life <= 0 || this.numberofWin >= MAX_GOOD_RESPONSES) {
                 this.gameOver();
             } else {
                 this.resetPosition();
