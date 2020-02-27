@@ -50,6 +50,8 @@ function loadUIS(assetpath, x, y) {
     sprite.alpha = 1;
     sprite.x = x;
     sprite.y = y;
+    sprite.width = sprite.width * 1.1;
+    sprite.height = sprite.height * 1.1;
     sprite.pivot.x = 0.5;
     sprite.pivot.y = 0.5;
     sprite.anchor.x = ThreeUI.anchors.right; // Default

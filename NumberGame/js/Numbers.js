@@ -47,7 +47,9 @@ class Numbers {
             }
             this.levelUpConter--;
             if (this.levelUpConter == 1) {
-                if (this.numberofWin >= MAXWINCOUNT || this.life <= 0) {
+                console.log("Gameover.levelUpConter = " + this.levelUpConter);
+                if (this.numberofWin >= MAXWINCOUNT || this.life <= 0 || this.timer >= LVLTIMER) {
+                    console.log("Gameover....levelUpConter = " + this.levelUpConter);
                     this.gameOver();
                 } else {
                     this.setNewGame();
@@ -80,7 +82,7 @@ class Numbers {
         timeoutHandle = setTimeout(mNumbers.nextTurn, 500);
         for (let i = 0; i < 3; i++) {
             mTex_Heart[i].visible = true;
-            DrawTextureAlign(mTex_Heart[i], 15 + i * 30, 16, ThreeUI.anchors.right, ThreeUI.anchors.bottom);
+            DrawTextureAlign(mTex_Heart[i], 30 + i * 35, 40, ThreeUI.anchors.right, ThreeUI.anchors.bottom);
         }
     }
 
@@ -235,10 +237,8 @@ class Numbers {
     }
     gameOver() {
         clearTimeout(timeoutHandle);
-
         this.levelScore.push(this.points + this.life * 20);
-
-        setScreen(GAMEOVER);
+        setScreen(this.numberofWin >= MAXWINCOUNT ? GAMELEVEL : GAMEOVER);
     }
     getTwoVal() {
         var minmax = (1 + Math.floor(this.level / 4)) * 10;

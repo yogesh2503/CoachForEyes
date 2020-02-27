@@ -16,7 +16,7 @@ var butArry = [],
     butRedArry = [],
     animGif = Array(6),
     scoreStrip = [];
-var tex_wrong, tex_right, tex_empty;
+var tex_wrong, tex_right, tex_empty, tex_Level;
 var mNumbers;
 var raycaster = new THREE.Raycaster();
 
@@ -96,6 +96,7 @@ function init() {
     AssetLoader.add.image('assets/strip.png');
     AssetLoader.add.image('assets/wrong.png');
     AssetLoader.add.image('assets/right.png');
+    AssetLoader.add.image('assets/levelUpdate.png');
     for (let i = 0; i < animGif.length; i++) {
         AssetLoader.add.image('assets/' + i + '.png');
     }
@@ -114,9 +115,13 @@ function init() {
         mTex_arrow = Array(2);
         mTex_sound = Array(2);
         for (let i = 0; i < 3; i++) {
-            mTex_Heart.push(loadUIS('assets/heart.png', 15 + i * 30, 16));
-            mTex_EHeart.push(loadUIS('assets/heartempty.png', 15 + i * 30, 16));
+            mTex_Heart.push(loadUIS('assets/heart.png', 30 + i * 35, 40));
+            mTex_EHeart.push(loadUIS('assets/heartempty.png', 30 + i * 35, 40));
         }
+
+
+
+
         mTex_LooseLife = loadUI('assets/heart.png', 0, -100);
 
         tex_wrong = loadUI('assets/wrong.png', 0, -100);
@@ -127,6 +132,9 @@ function init() {
         tex_right.width = tex_right.height = tex_wrong.width = tex_wrong.height = 64;
 
         tex_wrong.visible = tex_right.visible = false;
+
+        tex_Level = loadUIScal('assets/levelUpdate.png', 0, 0, .6, .6);
+
         for (var i = 0; i < 3; i++) {
             butArry.push(loadUIScal('assets/but.png', 120 - i * 120, 206, .4, .6));
             butRedArry.push(loadUIScal('assets/but0.png', 120 - i * 120, 206, .4, .6));
@@ -208,13 +216,20 @@ function Draw() {
             mNumbers.draw();
             break;
         case GAMEOVER:
-        case GAMELEVEL:
+
             for (var i = 0; i < 3; i++) {
                 DrawTransScal(butArry[i], 120 - i * 120, 300, 90, 48, mSel == 1 + i ? 1.1 : 1, mSel == 1 + i ? 0.5 : 1);
             }
             break;
         case GAMEMENU:
             DrawTransScal(butArry[0], 0, 193, 100, 40, mSel == 1 ? 1.1 : 1, mSel == 1 ? 0.5 : 1);
+            break;
+        case GAMELEVEL:
+            if (Counter > 100) {
+                mNumbers.numberofWin = 0;
+                mNumbers.level++;
+                setScreen(GAMENUMBERS);
+            }
             break;
     }
     Counter++;
@@ -298,7 +313,6 @@ function touchEvent(e, type) {
             }
             break;
         case GAMEOVER:
-        case GAMELEVEL:
             for (var i = 0; i < 3; i++) {
                 bounds = butArry[i].getBounds();
                 if (ThreeUI.isInBoundingBox(coords.x, coords.y, bounds.x, bounds.y, bounds.width, bounds.height)) {
@@ -316,7 +330,6 @@ function touchEvent(e, type) {
 
                         } else {
                             mNumbers.numberofWin = 0;
-                            mNumbers.NumRows = mNumbers.NumCols;
                             mNumbers.level++;
                             setScreen(GAMENUMBERS);
                         }
@@ -349,7 +362,7 @@ function setScreen(scr) {
     butArry.forEach(element => { element.visible = false; });
     butRedArry.forEach(element => { element.visible = false; });
     animGif.forEach(element => { element.visible = false; });
-    tex_wrong.visible = tex_right.visible = false;
+    tex_Level.visible = tex_wrong.visible = tex_right.visible = false;
     mTex_LooseLife.visible = false;
     for (let i = 0; i < 3; i++) {
         mTex_Heart[i].visible = false;
@@ -381,7 +394,7 @@ function setScreen(scr) {
             // mTex_fonts[3].rotation = 22;
 
             break;
-        case GAMELEVEL:
+
         case GAMEOVER:
             var total = 0;
             var j = mNumbers.levelScore.length > scoreStrip.length ? (mNumbers.levelScore.length - scoreStrip.length) : 0;
@@ -413,7 +426,22 @@ function setScreen(scr) {
             break;
         case GAMENUMBERS:
             mNumbers.gamereset();
+            break;
 
+        case GAMELEVEL:
+            Counter = 0;
+            DrawLblRT(mTex_fonts[ff++], "Score : " + (mNumbers.allscore + mNumbers.points), 50, 30, FONTSCORE, 20);
+            DrawLblRT(mTex_fonts[ff++], "Level : " + mNumbers.level, 50, 60, FONTSCORE, 20);
+            DrawLblLT(mTex_fonts[ff++], "Time : " + (LVLTIMER - mNumbers.timer) + " sec", 50, 30, FONTSCORE, 20);
+            for (let i = 0; i < 3; i++) {
+                mTex_Heart[i].visible = true;
+                DrawTextureAlign(mTex_Heart[i], 30 + i * 35, 40, ThreeUI.anchors.right, ThreeUI.anchors.bottom);
+            }
+            tex_right.visible = true;
+            tex_Level.visible = true;
+            DrawLbl(mTex_fonts[ff++], "Upgrade to", 0, -15, FONTSCORE, 34);
+            DrawLbl(mTex_fonts[ff++], "Level " + (mNumbers.level + 1), 0, 35, FONTSCORE, 34);
+            DrawLbl(mTex_fonts[ff++], "CONGRATULATIONS!", 0, -105, FONTGREEN, 30);
             break;
     }
 }
