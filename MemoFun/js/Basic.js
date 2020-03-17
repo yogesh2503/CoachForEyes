@@ -12,10 +12,13 @@ var sx = 0,
     rz = 0;
 const FONTCOLOR = "#444444";
 const FONTSCORE = "#545454";
-const BUTTONFONT = "#f0f0f0";
-const FONTGREEN = "#e6872e";
+const BUTTONFONT = "#ffffff";
+const FONTGREEN = "#57bacd";
+const FONTORANGE = "#e6872e";
 //const FONTGREEN = new THREE.Color('rgb(' + r + ',' + g + ',' + b + ')');
 var col = 0;
+var colors = [0x2c3e85, 0x0e6b39, 0xc95a53, 0xffdf59, 0xe6872e, 0x58bace, 0x792080, 0x9c5e0e, 0xff9fda, 0x68b249, 0xd9d9d9, 0x000000];
+
 
 function loadUI(assetpath, x, y, clickval) {
     var sprite = gameUI.createSprite(assetpath);
@@ -235,7 +238,8 @@ function createColor() {
     b = Math.floor(Math.sin(frequency * col + 4) * 127 + 128);
 
     col++;
-    return new THREE.Color('rgb(' + r + ',' + g + ',' + b + ')');
+    console.log("colors[col % col.length] = " + colors[col % col.length]);
+    return new THREE.Color(colors[col % colors.length]); //new THREE.Color('rgb(' + r + ',' + g + ',' + b + ')');
 }
 var isMobile = {
     Android: function() { return navigator.userAgent.match(/Android/i); },
@@ -256,8 +260,8 @@ function createPlan(tex, width, hight, trans) {
 }
 
 function createPlanMesh() {
-    // var material = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true });
-    var material = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, blending: THREE.CustomBlending, blendSrc: THREE.OneFactor, blendDst: THREE.OneMinusSrcAlphaFactor });
+    var material = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: false });
+    // var material = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, blending: THREE.CustomBlending, blendSrc: THREE.OneFactor, blendDst: THREE.OneMinusSrcAlphaFactor });
     var mashs = new THREE.Mesh(new THREE.PlaneBufferGeometry(1, 1, 1, 1), material);
     mashs.no = 0;
     //scene.add(mashs);
@@ -295,6 +299,9 @@ function getRan(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
 }
 
+function shortColor() {
+    colors.sort(compRan);
+}
 /*
 
 NAME OF THE GAME: MEMO FUN

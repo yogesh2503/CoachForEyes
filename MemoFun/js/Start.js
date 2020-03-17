@@ -400,12 +400,13 @@ function setScreen(scr) {
             for (var i = 0; i < mMemo.life; i++) {
                 DrawTextureAlign(mTex_Heart[i], 105 + i * 27, -260, ThreeUI.anchors.center, ThreeUI.anchors.center);
             }
-            DrawLbl(mTex_fonts[ff++], "GAMEOVER\n---", 0, -300, FONTSCORE, 25, "center");
+            DrawLbl(mTex_fonts[ff++], "GAMEOVER", 0, -300, FONTSCORE, 25, "center");
+            DrawLbl(mTex_fonts[ff++], "\n---", 0, -300, FONTGREEN, 25, "center");
             if (GameScreen == GAMEOVER && mMemo.life <= 0) {
-                DrawLbl(mTex_fonts[ff++], "Congratulations!\n\nFinal Score " + total + " points", 0, -250, FONTSCORE, 20, "center");
+                DrawLbl(mTex_fonts[ff++], "Congratulations!\n\nFinal Score " + total + " points", 0, -250, BUTTONFONT, 20, "center");
             } else {
-                DrawLbl(mTex_fonts[ff++], "Congratulations! you save", -50, -250, FONTSCORE, 24, "center");
-                DrawLbl(mTex_fonts[ff++], "Bonus " + (mMemo.life * 20) + " Point!\n\nFinal Score " + total + " points", 0, -210, FONTSCORE, 20, "center");
+                DrawLbl(mTex_fonts[ff++], "Congratulations! you save", -50, -250, BUTTONFONT, 24, "center");
+                DrawLbl(mTex_fonts[ff++], "Bonus " + (mMemo.life * 20) + " Point!\n\nFinal Score " + total + " points", 0, -210, BUTTONFONT, 20, "center");
             }
 
             DrawLbl(mTex_fonts[ff++], (mMemo.life <= 0 || mMemo.timer >= LVLTIMER) ? "Other\nGame" : "Next\nGame", 0, 296, BUTTONFONT, 20, "center");
@@ -427,8 +428,8 @@ function setScreen(scr) {
             }
             tex_right.visible = true;
             tex_Level.visible = true;
-            DrawLbl(mTex_fonts[ff++], "Upgrade to", 0, -15, FONTGREEN, 30);
-            DrawLbl(mTex_fonts[ff++], "Level " + (mMemo.level + 1), 0, 35, FONTGREEN, 30);
+            DrawLbl(mTex_fonts[ff++], "Upgrade to", 0, -15, BUTTONFONT, 30);
+            DrawLbl(mTex_fonts[ff++], "Level " + (mMemo.level + 1), 0, 35, BUTTONFONT, 30);
             DrawLbl(mTex_fonts[ff++], "CONGRATULATIONS!", 0, -105, FONTSCORE, 28);
             break;
     }

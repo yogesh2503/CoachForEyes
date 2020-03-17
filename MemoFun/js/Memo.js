@@ -1,4 +1,5 @@
 const MX = 24;
+
 class Block {
     constructor(memo, no) {
         this.no = 2; //[2, 2, 2, 2];
@@ -231,6 +232,7 @@ class Memo {
         }
     }
     setNewGame() {
+        shortColor();
         this.mBlock.forEach(element => {
             element.setVisible(false);
         });
