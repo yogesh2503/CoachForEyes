@@ -1,4 +1,4 @@
-class Level6 {
+class Level11 {
     constructor() {
         this.vx = 0;
         this.vy = 1;
@@ -6,11 +6,10 @@ class Level6 {
         this.move = false;
         this.vx = 1;
         this.lineno = 0;
-        this.position = 6;
-        this.digonal2 = ["0-1", "0-4", "8-12", "12-13", "14-15", "11-15", "3-7", "2-3"];
-        this.digonal = ["1-2", "2-6", "6-7", "7-11", "10-11", "10-14", "13-14", "9-13",
-            "8-9", "4-8", "4-5", "5-6", "6-10", "9-10", "5-9", "1-5"
-        ];
+        this.position = 3;
+        this.digonal2 = ["0-1", "6-7", "8-9", "14-15", "11-15", "2-6", "9-13", "0-4"];
+        this.digonal = ["1-2", "2-3", "4-5", "5-6", "9-10", "10-11","12-13", "13-14",
+         "3-7", "7-11", "6-10", "10-14", "1-5", "5-9", "4-8", "8-12"];
         this.val = "rightup";
         this.isRemove = false;
         this.reset();
@@ -22,6 +21,7 @@ class Level6 {
         this.isVerticle = false;
         this.moveAnim = 0;
     }
+
     update() {
         if (this.move) {
             if (this.vx > 0) {
@@ -126,6 +126,7 @@ class Level6 {
         return 0;
     }
     reset() {
+       console.log(this.val + "  this.val");
       this.animvx = .02;
       this.moveAnim = 20;
         isSwipshow = true;
@@ -258,7 +259,7 @@ class Level6 {
         mTex_bg.visible = true
         mTex_lvl2.visible = false;
         mFbx_Boy.position.set(pos4[5][0], pos4[5][1], 3);
-        DrawLbl(mTex_fonts[0], "Level 7", 0, -280, fcolor, 40);
+        DrawLbl(mTex_fonts[0],NXTLVL, 0, -280, fcolor, 40);
         DrawLbl(mTex_fonts[1], "MAKE A COPY", 0, -100, fcolor, 25);
         DrawLbl(mTex_fonts[2], "(Swipe to paint)", 0, -70, fcolor, 22);
         isSwipshow = false;
@@ -273,7 +274,7 @@ var camera, scene, renderer, Counter = 0,
     mFbx_Boy, mTex_Boy, tex_dot, dotArr = Array(4);
 var drowline = [];
 var mTex_hand;
-var mLevel6 = new Level6();
+var mLevel11 = new Level11();
 var pen3D, gameUI;
 var mTex_fonts = Array(3);
 var mTex_Swipe, mTex_Play;
@@ -284,6 +285,8 @@ var CANVAS_WIDTH = 480,
 var isSwipshow = false;
 var Confetti = 1;
 const fcolor = "#333";
+const CURLVL = "Level 11";
+const NXTLVL = "Level 12";
 // const fcolor = "#000";
 function initstart() {
     camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 300);
@@ -350,7 +353,7 @@ function initstart() {
     mFbx_Boy = new THREE.Group();
     pen3D = new THREE.Group();
     var geometry = new THREE.SphereGeometry(1, 4, 4);
-    var material = new THREE.MeshBasicMaterial({ color: 0xd80020 });
+    var material = new THREE.MeshBasicMaterial({ color: 0x12c204 });
     var sphere = new THREE.Mesh(geometry, material);
     for (var i = 0; i < 400; i++) {
         drowline[i] = sphere.clone();
@@ -393,9 +396,10 @@ function initstart() {
     mFbx_Boy.add(pen3D);
     // mFbx_Boy.rotation.set(Math.PI * .5, Math.PI * .25, 0);
     scene.add(mFbx_Boy);
-    mFbx_Boy.position.set(pos4[6][0], pos4[6][1], 3);
+    mLevel11.position = 3;
+    mFbx_Boy.position.set(pos4[mLevel11.position][0], pos4[mLevel11.position][1], 3);
     AssetLoader.add.image64('level',level_64);
-    AssetLoader.add.image64('level6',level6_64);
+    AssetLoader.add.image64('Level11',level11_64);
     AssetLoader.add.image64('hand',hand_64);
     AssetLoader.add.image64('refress',refress_64);
     AssetLoader.add.image64('swipe',swipe_64);
@@ -404,7 +408,7 @@ function initstart() {
     AssetLoader.progressListener = function(progress) {};
     AssetLoader.load(function() {
         mTex_bg = loadUI('level', 0, -190, 0);
-        mTex_lvl2 = loadUI('level6', 0, -190, 0);
+        mTex_lvl2 = loadUI('Level11', 0, -190, 0);
         mTex_hand = loadUI('hand', 0, 100, 0);
         mTex_refress = loadUI('refress', 150, -100, 1);
         mTex_Swipe = loadUI('swipe', 0, -20, 0);
@@ -423,7 +427,7 @@ function initstart() {
             mTex_fonts[i] = createTexts('100', 8, fcolor, ThreeUI.anchors.center, ThreeUI.anchors.center, 'center', 'HanaleiFill');
             mTex_fonts[i].visible = true;
         }
-        DrawLbl(mTex_fonts[0], "Level 6", 0, -280, fcolor, 40);
+        DrawLbl(mTex_fonts[0], CURLVL, 0, -280, fcolor, 40);
         DrawLbl(mTex_fonts[1], "MAKE A COPY", 0, -100, fcolor, 25);
         DrawLbl(mTex_fonts[2], "(Swipe to paint)", 0, -70, fcolor, 22);
         Counter = 0;
@@ -518,36 +522,36 @@ function touchEvent(e, type) {
 
         isClick = false;
     }
-    str = "t = "+type+", move = "+mLevel6.move+", win = "+mLevel6.isWin+", isClick = "+isClick;
+    str = "t = "+type+", move = "+mLevel11.move+", win = "+mLevel11.isWin+", isClick = "+isClick;
     // DrawLbl(mTex_fonts[5], str, 0, -160, fcolor, 16);
-    if (type == 1 && mLevel6.move == false && mLevel6.isWin == false && isClick) {
+    if (type == 1 && mLevel11.move == false && mLevel11.isWin == false && isClick) {
         var diff = new THREE.Vector2((vec2.x - mouse.x), (vec2.y - mouse.y));
         var mxdiff = .08;
         // DrawLbl(mTex_fonts[4], diff.x.toFixed(3)+", "+diff.y.toFixed(3), 0, -260, fcolor, 16);
         // if (window.innerWidth < window.innerHeight) {
             if (diff.x > mxdiff) {
-                mLevel6.set("left");
+                mLevel11.set("left");
             } else if (diff.x < -mxdiff) {
-                mLevel6.set("right");
+                mLevel11.set("right");
             } else if (diff.y > mxdiff) {
-                mLevel6.set("down");
+                mLevel11.set("down");
             } else if (diff.y < -mxdiff) {
-                mLevel6.set("up");
+                mLevel11.set("up");
             }
         // } else {
         //     if (diff.x > mxdiff) {
-        //         mLevel6.set("up");
+        //         mLevel11.set("up");
         //     } else if (diff.x < -mxdiff) {
-        //         mLevel6.set("down");
+        //         mLevel11.set("down");
         //     } else if (diff.y > mxdiff) {
-        //         mLevel6.set("left");
+        //         mLevel11.set("left");
         //     } else if (diff.y < -mxdiff) {
-        //         mLevel6.set("right");
+        //         mLevel11.set("right");
         //     }
         // }
 
     }
-    if (mLevel6.isWin == true && type == 2 && mLevel6.winCounter >= 100) {
+    if (mLevel11.isWin == true && type == 2 && mLevel11.winCounter >= 100) {
         Handle_Menu(2);
     }
 }
@@ -558,15 +562,15 @@ function Draw() {
     if (mFbx_Boy == null || mTex_hand == null) {
         return;
     }
-    if (mLevel6.winCounter < 100) {
-        mLevel6.update();
+    if (mLevel11.winCounter < 100) {
+        mLevel11.update();
     }
     // if (window.innerWidth < window.innerHeight) {
         portrait();
     // } else {
     //     landscap();
     // }
-    for (var i = 0; i < 50 && sanim > .2 && mLevel6.isWin; i++) {
+    for (var i = 0; i < 50 && sanim > .2 && mLevel11.isWin; i++) {
         anim[i].position.x += anim[i].vx;
         anim[i].position.y += anim[i].vy;
         anim[i].visible = true;
@@ -593,10 +597,11 @@ function Draw() {
 }
 
 function portrait() {
-    if (mLevel6.winCounter < 100) {
+    if (mLevel11.winCounter < 100) {
+
         camera.rotation.set(0.5, 0, 0);
         camera.position.set(0, -Confetti - 57, -78);
-        if (mLevel6.isWin) {
+        if (mLevel11.isWin) {
 
             if (Confetti < 40) {
                 Confetti *= 1.1;
@@ -610,7 +615,8 @@ function portrait() {
                 }
             }
         } else {
-            DrawLbl(mTex_fonts[0], "Level 6", 0, -280, fcolor, 40);
+            DrawLbl(mTex_fonts[0], CURLVL, 0, -280, fcolor, 40);
+
             DrawLbl(mTex_fonts[1], "MAKE A COPY", 0, -100, fcolor, 25);
             DrawLbl(mTex_fonts[2], "(Swipe to paint)", 0, -70, fcolor, 22);
             for (var i = 0; i < mTex_fonts.length; i++) {
@@ -625,7 +631,7 @@ function portrait() {
     } else {
         camera.position.set(0, -57, -78);
         camera.rotation.set(0.5, 0, 0);
-        DrawLbl(mTex_fonts[0], "Level 6", 0, -280, fcolor, 40);
+        DrawLbl(mTex_fonts[0], NXTLVL , 0, -280, fcolor, 40);
         DrawLbl(mTex_fonts[1], "MAKE A COPY", 0, -100, fcolor, 25);
         DrawLbl(mTex_fonts[2], "(Swipe to paint)", 0, -70, fcolor, 22);
         for (var i = 0; i < mTex_fonts.length; i++) {
@@ -650,10 +656,8 @@ function portrait() {
         if (mTex_Swipe.width < 110) {
             mTex_Swipe.vx = .005;
         }
-
     } else {
         mTex_hand.visible = false;
-
         mTex_Swipe.visible = false;
     }
     mTex_Play.anchor.y = ThreeUI.anchors.bottom;
@@ -666,11 +670,12 @@ function portrait() {
     mTex_Play.s += mTex_Play.vx;
     mTex_Play.rotation = 0;
 
+    mTex_lvl2.rotation = 0;
     mTex_lvl2.x = 0;
     mTex_lvl2.y = -190;
     mTex_lvl2.width = 120;
     mTex_lvl2.height = 120;
-    mTex_bg.rotation = 270;
+    mTex_bg.rotation = 0;
     mTex_bg.x = 0;
     mTex_bg.y = -190;
     mTex_bg.width = 120;
@@ -691,11 +696,11 @@ function landscap() {
     for (var i = 0; i < mTex_fonts.length; i++) {
         mTex_fonts[i].rotation = 270;
     }
-    if (mLevel6.winCounter < 100) {
+    if (mLevel11.winCounter < 100) {
         camera.rotation.set(.29, 0, -1.58);
         camera.position.set(0, -Confetti - 17, -123);
 
-        if (mLevel6.isWin) {
+        if (mLevel11.isWin) {
             if (Confetti < 40) {
                 camera.position.set(0, -Confetti - 17, 0 - 123);
                 Confetti *= 1.1;
@@ -709,7 +714,7 @@ function landscap() {
                 }
             }
         } else {
-            DrawLbl(mTex_fonts[0], "Level 6", -500, 0, fcolor, 70);
+            DrawLbl(mTex_fonts[0], CURLVL, -500, 0, fcolor, 70);
             DrawLbl(mTex_fonts[1], "MAKE A COPY", -230, 0, fcolor, 40);
             DrawLbl(mTex_fonts[2], "(Swipe to paint)", -180, 0, fcolor, 36);
         }
@@ -717,7 +722,7 @@ function landscap() {
     } else {
         camera.rotation.set(.29, 0, -1.58);
         camera.position.set(0, -17, -123);
-        DrawLbl(mTex_fonts[0], "Level 6", -500, 0, fcolor, 70);
+        DrawLbl(mTex_fonts[0], NXTLVL, -500, 0, fcolor, 70);
         DrawLbl(mTex_fonts[1], "MAKE A COPY", -230, 0, fcolor, 40);
         DrawLbl(mTex_fonts[2], "(Swipe to paint)", -180, 0, fcolor, 36);
     }
@@ -744,11 +749,6 @@ function landscap() {
         mTex_hand.visible = false;
         mTex_Swipe.visible = false;
     }
-
-
-
-
-
     mTex_Play.anchor.x = ThreeUI.anchors.right;
     mTex_Play.anchor.y = ThreeUI.anchors.center;
     mTex_Play.x = 70;
@@ -766,6 +766,7 @@ function landscap() {
     mTex_refress.y = -260;
     mTex_refress.width = 84;
     mTex_refress.height = 84;
+    mTex_lvl2.rotation = 270;
     mTex_lvl2.x = -380;
     mTex_lvl2.y = 0;
     mTex_lvl2.width = 180;
@@ -794,8 +795,9 @@ function Handle_Menu(clickval) {
             drowline[i].visible = false;
             drowline[i].po = "0";
         }
-        mFbx_Boy.position.set(pos4[6][0], pos4[6][1], 3);
-        mLevel6.position = 6;
+        mLevel11.position = 3;
+        mFbx_Boy.position.set(pos4[mLevel11.position][0], pos4[mLevel11.position][1], 3);
+
     }
 }
 

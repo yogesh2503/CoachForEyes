@@ -1,4 +1,4 @@
-class Level6 {
+class Level35 {
     constructor() {
         this.vx = 0;
         this.vy = 1;
@@ -6,11 +6,9 @@ class Level6 {
         this.move = false;
         this.vx = 1;
         this.lineno = 0;
-        this.position = 6;
-        this.digonal2 = ["0-1", "0-4", "8-12", "12-13", "14-15", "11-15", "3-7", "2-3"];
-        this.digonal = ["1-2", "2-6", "6-7", "7-11", "10-11", "10-14", "13-14", "9-13",
-            "8-9", "4-8", "4-5", "5-6", "6-10", "9-10", "5-9", "1-5"
-        ];
+        this.position = 0;
+        this.digonal = ["04", "48", "25", "24", "46", "57", "67"];
+        this.digonal2 = ["01", "12", "34", "45", "78", "03", "36", "14", "47", "58", "15", "37", "13"];
         this.val = "rightup";
         this.isRemove = false;
         this.reset();
@@ -19,7 +17,7 @@ class Level6 {
         this.penAnim = 1000;
         this.animx=.01;
         this.animvx=.02;
-        this.isVerticle = false;
+        this.isVerticle = 0;
         this.moveAnim = 0;
     }
     update() {
@@ -34,7 +32,6 @@ class Level6 {
             if (this.vy > 0) {
                 mFbx_Boy.position.y += this.vy;
                 if (mFbx_Boy.position.y > pos4[this.position][1]) {
-
                     mFbx_Boy.position.y = pos4[this.position][1];
                     this.reset();
                 }
@@ -68,10 +65,14 @@ class Level6 {
             }
         }
         if(this.moveAnim > 0){
-          if(this.isVerticle)
+          if(this.isVerticle == 0)
             pen3D.rotation.set(-Math.PI * this.animx, 0, 0);
-          else
+          else if(this.isVerticle == 1)
             pen3D.rotation.set(0, -Math.PI * this.animx, 0);
+         else if(this.isVerticle == 2)
+              pen3D.rotation.set(-Math.PI*this.animx, Math.PI*this.animx, 0);
+              else
+              pen3D.rotation.set(Math.PI*this.animx, Math.PI*this.animx, 0);
           if(this.animx > .05){
             this.animvx = -Math.abs(this.animvx*.7);
           }
@@ -85,15 +86,12 @@ class Level6 {
         }
         if (this.isWin) {
             this.winCounter++;
-            if (this.winCounter > 99) {
-                this.SetLevel();
-            }
         }
     }
     setRemove() {
         for (let i = 0; i < drowline.length; i++) {
             if (drowline[i].po == this.val) {
-                if (circir(mFbx_Boy.position.x - 15, mFbx_Boy.position.y - 26.5, 1, drowline[i].position.x, drowline[i].position.y, .3)) {
+                if (circir(mFbx_Boy.position.x - 15, mFbx_Boy.position.y - 26.5, 1, drowline[i].position.x, drowline[i].position.y, .6)) {
                     drowline[i].visible = false;
                     drowline[i].po = "0";
                 }
@@ -147,6 +145,7 @@ class Level6 {
                 this.isWin = false;
             }
         }
+
         for (let j = 0; j < this.digonal2.length && this.isWin; j++) {
             var isthere = false;
             for (let i = 0; i < drowline.length && isthere == false; i++) {
@@ -163,105 +162,105 @@ class Level6 {
         this.val = val;
         switch (val) {
             case "left":
-                if (this.position > 3) {
+                if (this.position > 2) {
                     this.move = true;
                     this.vx = -1;
-                    this.val = (this.position - 4) + "-" + this.position;
-                    this.position -= 4;
+                    this.val = (this.position - 3) + "" + this.position;
+                    this.position -= 3;
                     this.isRemove = this.checkRemove();
-                    this.isVerticle = false;
+                    this.isVerticle = 1;
                 }
                 break;
             case "right":
-                if (this.position < 12) {
+                if (this.position < 6) {
                     this.move = true;
                     this.vx = 1;
-                    this.val = (this.position) + "-" + (this.position + 4);
-                    this.position += 4;
+                    this.val = (this.position) + "" + (this.position + 3);
+                    this.position += 3;
                     this.isRemove = this.checkRemove();
-                    this.isVerticle = false;
+                    this.isVerticle = 1;
                 }
                 break;
             case "up":
-                if (this.position != 3 && this.position != 7 && this.position != 11 && this.position != 15) {
+                if (this.position != 2 && this.position != 5 && this.position != 8) {
                     this.move = true;
                     this.vy = 1;
-                    this.val = (this.position) + "-" + (this.position + 1);
+                    this.val = (this.position) + "" + (this.position + 1);
                     this.position += 1;
                     this.isRemove = this.checkRemove();
-                    this.isVerticle = true;
+                    this.isVerticle = 0;
                 }
                 break;
             case "down":
-                if (this.position != 0 && this.position != 4 && this.position != 8 && this.position != 12) {
+                if (this.position != 0 && this.position != 3 && this.position != 6) {
                     this.move = true;
                     this.vy = -1;
-                    this.val = (this.position - 1) + "-" + (this.position);
+                    this.val = (this.position - 1) + "" + (this.position);
                     this.position -= 1;
                     this.isRemove = this.checkRemove();
-                    this.isVerticle = true;
+                    this.isVerticle = 0;
                 }
                 break;
             case "leftdown":
-                if (this.position != 12 && this.position != 4 && this.position != 8 && this.position > 3) {
-
+                if (this.position != 0 && this.position != 3 && this.position != 6 && this.position != 2) {
                     this.move = true;
                     this.vy = -1;
                     this.vx = -1;
-                    this.val = (this.position - 5) + "-" + (this.position);
-                    this.position -= 5;
+                    this.val = (this.position - 4) + "" + (this.position);
+                    this.position -= 4;
                     this.isRemove = this.checkRemove();
+                    this.isVerticle = 2;
                 }
                 break;
             case "rightdown":
-                if (this.position != 0 && this.position != 4 && this.position != 8 && this.position < 12) {
+                if (this.position != 0 && this.position != 3 && this.position != 6 && this.position != 8) {
                     this.move = true;
                     this.vy = -1;
                     this.vx = 1;
-                    this.val = (this.position) + "-" + (this.position + 3);
-                    this.position += 3;
+                    this.val = (this.position) + "" + (this.position + 2);
+                    this.position += 2;
                     this.isRemove = this.checkRemove();
+                    this.isVerticle = 3;
                 }
                 break;
             case "leftup":
-                if (this.position != 3 && this.position != 7 && this.position != 11 && this.position > 3) {
+                if (this.position != 2 && this.position != 5 && this.position != 8 && this.position != 8) {
                     this.move = true;
                     this.vy = 1;
                     this.vx = -1;
-                    this.val = (this.position - 3) + "-" + (this.position);
-                    this.position -= 3;
+                    this.val = (this.position - 2) + "" + (this.position);
+                    this.position -= 2;
                     this.isRemove = this.checkRemove();
+                    this.isVerticle = 3;
                 }
                 break;
             case "rightup":
-                if (this.position != 15 && this.position != 7 && this.position != 11 && this.position < 12) {
+                if (this.position != 2 && this.position != 5 && this.position != 8 && this.position != 6) {
                     this.move = true;
                     this.vy = 1;
                     this.vx = 1;
-                    this.val = (this.position) + "-" + (this.position + 5);
-                    this.position += 5;
+                    this.val = (this.position) + "" + (this.position + 4);
+                    this.position += 4;
                     this.isRemove = this.checkRemove();
+                    this.isVerticle = 2;
                 }
                 break;
         }
     }
-
     SetLevel() {
+      console.log("35   !!");
         for (let i = 0; i < drowline.length; i++) {
             drowline[i].visible = false;
-            drowline[i].po = "0";
+            drowline[i].po = "";
         }
-        for (var i = 0; i < 16; i++) {
-            dotArr[i].position.set(-18.0 + (i % 4) * 12, -13.5 + Math.floor(i / 4) * 12 - 15, -197.2);
+        for (var i = 0; i < 9; i++) {
+            dotArr[i].position.set(-18 + (i % 3) * 18, -13 + Math.floor(i / 3) * 18 - 15, -197.2);
             dotArr[i].visible = true;
         }
         mTex_bg.visible = true
-        mTex_lvl2.visible = false;
-        mFbx_Boy.position.set(pos4[5][0], pos4[5][1], 3);
-        DrawLbl(mTex_fonts[0], "Level 7", 0, -280, fcolor, 40);
-        DrawLbl(mTex_fonts[1], "MAKE A COPY", 0, -100, fcolor, 25);
-        DrawLbl(mTex_fonts[2], "(Swipe to paint)", 0, -70, fcolor, 22);
-        isSwipshow = false;
+        mTex_lvl2.visible = false
+        mLevel35.position = 0;
+        mFbx_Boy.position.set(pos4[mLevel35.position][0], pos4[mLevel35.position][1], 3);
     }
 }
 
@@ -273,7 +272,7 @@ var camera, scene, renderer, Counter = 0,
     mFbx_Boy, mTex_Boy, tex_dot, dotArr = Array(4);
 var drowline = [];
 var mTex_hand;
-var mLevel6 = new Level6();
+var mLevel35 = new Level35();
 var pen3D, gameUI;
 var mTex_fonts = Array(3);
 var mTex_Swipe, mTex_Play;
@@ -284,7 +283,9 @@ var CANVAS_WIDTH = 480,
 var isSwipshow = false;
 var Confetti = 1;
 const fcolor = "#333";
-// const fcolor = "#000";
+const CURLVL = "Level 35";
+const NXTLVL = "Level 36";
+
 function initstart() {
     camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 300);
     camera.position.set(0, -57, -78);
@@ -300,11 +301,6 @@ function initstart() {
     scene.add(ambientLight);
     light = new THREE.DirectionalLight(0xffffff);
     light.position.set(0, -80, 200);
-    // light.castShadow = true;
-    // light.shadow.camera.top = 100;
-    // light.shadow.camera.bottom = -100;
-    // light.shadow.camera.left = -120;
-    // light.shadow.camera.right = 120;
     scene.add(light);
     CANVAS_HEIGHT = window.innerHeight;
     CANVAS_WIDTH = window.innerWidth;
@@ -319,6 +315,7 @@ function initstart() {
     scene.add(meshLoading);
     var manager = new THREE.LoadingManager(loadModel);
     manager.onProgress = function(item, loaded, total) {};
+
     function onProgress(xhr) {
         if (xhr.lengthComputable) {
             var percentComplete = (xhr.loaded / xhr.total) * 8 * objCount;
@@ -335,7 +332,8 @@ function initstart() {
         scene.add(dotArr[i]);
     }
     for (var i = 0; i < 16; i++) {
-        dotArr[i].position.set(-18.0 + (i % 4) * 12, -13.5 + Math.floor(i / 4) * 12 - 15, -197.2);
+        dotArr[i].position.set(-17.5 + (i % 3) * 18, -13.5 + Math.floor(i / 3) * 18 - 15, -197.2);
+        dotArr[i].visible = i<9;
     }
     for (var i = 0; i < 50; i++) {
         var material = new THREE.MeshBasicMaterial({ color: createColor() });
@@ -350,7 +348,7 @@ function initstart() {
     mFbx_Boy = new THREE.Group();
     pen3D = new THREE.Group();
     var geometry = new THREE.SphereGeometry(1, 4, 4);
-    var material = new THREE.MeshBasicMaterial({ color: 0xd80020 });
+    var material = new THREE.MeshBasicMaterial({ color: 0xffc600 });
     var sphere = new THREE.Mesh(geometry, material);
     for (var i = 0; i < 400; i++) {
         drowline[i] = sphere.clone();
@@ -364,13 +362,11 @@ function initstart() {
     cylinder = new THREE.Mesh(geometry, material);
     cylinder.rotation.set(Math.PI * .5, Math.PI * .25, 0);
     scene.add(cylinder);
-
     var geometry = new THREE.CylinderGeometry(1.6, 1.5, 2, 4);
     var material = new THREE.MeshStandardMaterial({ color: 0xff0060, metalness: 0, roughness: 1, envMapIntensity: 1.0 });
     cylinder2 = new THREE.Mesh(geometry, material);
     cylinder2.rotation.set(Math.PI * .5, Math.PI * .25, 0);
     scene.add(cylinder2);
-
     var material = new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 0, roughness: 1, envMapIntensity: 1.0 });
     var geometry = new THREE.CylinderGeometry(0.8, 0.99, 3, 4);
     cylinder3 = new THREE.Mesh(geometry, material);
@@ -391,20 +387,21 @@ function initstart() {
     pen3D.add(cylinder2);
     pen3D.add(cylinder3);
     mFbx_Boy.add(pen3D);
-    // mFbx_Boy.rotation.set(Math.PI * .5, Math.PI * .25, 0);
+
     scene.add(mFbx_Boy);
-    mFbx_Boy.position.set(pos4[6][0], pos4[6][1], 3);
-    AssetLoader.add.image64('level',level_64);
-    AssetLoader.add.image64('level6',level6_64);
-    AssetLoader.add.image64('hand',hand_64);
-    AssetLoader.add.image64('refress',refress_64);
-    AssetLoader.add.image64('swipe',swipe_64);
-    AssetLoader.add.image64('play',play_64);
+    mLevel35.position = 0;
+    mFbx_Boy.position.set(pos4[mLevel35.position][0], pos4[mLevel35.position][1], 3);
+    AssetLoader.add.image64('level', level_64);
+    AssetLoader.add.image64('Level35', level35_64);
+    AssetLoader.add.image64('hand', hand_64);
+    AssetLoader.add.image64('refress', refress_64);
+    AssetLoader.add.image64('swipe', swipe_64);
+    AssetLoader.add.image64('play', play_64);
     var img = new Image();
     AssetLoader.progressListener = function(progress) {};
     AssetLoader.load(function() {
         mTex_bg = loadUI('level', 0, -190, 0);
-        mTex_lvl2 = loadUI('level6', 0, -190, 0);
+        mTex_lvl2 = loadUI('Level35', 0, -190, 0);
         mTex_hand = loadUI('hand', 0, 100, 0);
         mTex_refress = loadUI('refress', 150, -100, 1);
         mTex_Swipe = loadUI('swipe', 0, -20, 0);
@@ -423,11 +420,12 @@ function initstart() {
             mTex_fonts[i] = createTexts('100', 8, fcolor, ThreeUI.anchors.center, ThreeUI.anchors.center, 'center', 'HanaleiFill');
             mTex_fonts[i].visible = true;
         }
-        DrawLbl(mTex_fonts[0], "Level 6", 0, -280, fcolor, 40);
+        DrawLbl(mTex_fonts[0], CURLVL, 0, -280, fcolor, 40);
         DrawLbl(mTex_fonts[1], "MAKE A COPY", 0, -100, fcolor, 25);
         DrawLbl(mTex_fonts[2], "(Swipe to paint)", 0, -70, fcolor, 22);
         Counter = 0;
     });
+    document.addEventListener('keydown', dealWithKeyboard);
     // if (isMobile.any())
     {
         document.addEventListener('touchstart', e => { touchEvent(e, 0); });
@@ -435,7 +433,7 @@ function initstart() {
         document.addEventListener('touchmove', e => { touchEvent(e, 1); });
     }
     // else
-     {
+    {
         document.addEventListener('mousedown', e => { touchEvent(e, 0); });
         document.addEventListener('mousemove', e => { touchEvent(e, 1); });
         document.addEventListener('mouseup', e => { touchEvent(e, 2); });
@@ -445,24 +443,16 @@ function initstart() {
 }
 
 function loadModel() {}
-
 var pos4 = [
-    [-3, -2],
-    [-3, 10],
-    [-3, 22],
-    [-3, 34],
-    [9, -2],
-    [9, 10],
-    [9, 22],
-    [9, 34],
-    [21, -2],
-    [21, 10],
-    [21, 22],
-    [21, 34],
-    [33, -2],
-    [33, 10],
-    [33, 22],
-    [33, 34],
+    [-2, -2],
+    [-2, 16],
+    [-2, 34],
+    [16, -2],
+    [16, 16],
+    [16, 34],
+    [34, -2],
+    [34, 16],
+    [34, 34],
 
 ];
 var mouse = new THREE.Vector2();
@@ -471,11 +461,8 @@ var vec2 = new THREE.Vector2();
 var isClick = false;
 
 function touchEvent(e, type) {
-
-  CANVAS_HEIGHT = window.innerHeight;
-  CANVAS_WIDTH = window.innerWidth;
-
-
+    CANVAS_HEIGHT = window.innerHeight;
+    CANVAS_WIDTH = window.innerWidth;
     var scale = gameUI.height / gameUI.gameCanvas.getBoundingClientRect().height; {
         if (e.touches != null) {
             if (e.touches.length > 0) {
@@ -506,9 +493,8 @@ function touchEvent(e, type) {
         }
     }
 
-    var str = "["+CANVAS_WIDTH+", "+CANVAS_HEIGHT+"]["+mouse.x.toFixed(2)+", "+mouse.y.toFixed(2)+"]";
-    console.log("~~~~~~~~~~");
-    // DrawLbl(mTex_fonts[3], str, 0, -340, fcolor, 16);
+    var str = "[" + CANVAS_WIDTH + ", " + CANVAS_HEIGHT + "][" + mouse.x.toFixed(2) + ", " + mouse.y.toFixed(2) + "]";
+
     if (type == 0) {
         vec2.x = mouse.x;
         vec2.y = mouse.y;
@@ -518,55 +504,127 @@ function touchEvent(e, type) {
 
         isClick = false;
     }
-    str = "t = "+type+", move = "+mLevel6.move+", win = "+mLevel6.isWin+", isClick = "+isClick;
-    // DrawLbl(mTex_fonts[5], str, 0, -160, fcolor, 16);
-    if (type == 1 && mLevel6.move == false && mLevel6.isWin == false && isClick) {
+
+    if (type == 1 && mLevel35.move == false && isClick) {
         var diff = new THREE.Vector2((vec2.x - mouse.x), (vec2.y - mouse.y));
-        var mxdiff = .08;
-        // DrawLbl(mTex_fonts[4], diff.x.toFixed(3)+", "+diff.y.toFixed(3), 0, -260, fcolor, 16);
-        // if (window.innerWidth < window.innerHeight) {
-            if (diff.x > mxdiff) {
-                mLevel6.set("left");
-            } else if (diff.x < -mxdiff) {
-                mLevel6.set("right");
-            } else if (diff.y > mxdiff) {
-                mLevel6.set("down");
-            } else if (diff.y < -mxdiff) {
-                mLevel6.set("up");
-            }
-        // } else {
-        //     if (diff.x > mxdiff) {
-        //         mLevel6.set("up");
-        //     } else if (diff.x < -mxdiff) {
-        //         mLevel6.set("down");
-        //     } else if (diff.y > mxdiff) {
-        //         mLevel6.set("left");
-        //     } else if (diff.y < -mxdiff) {
-        //         mLevel6.set("right");
-        //     }
-        // }
+        var angle = (GetAngle(diff.x, diff.y) * (180.0 / Math.PI));
+        if (angle < 0) {
+            angle = 360 + angle;
+        }
+    if(mLevel35.isWin == false){
+      if (Math.abs(diff.x) > .1 || Math.abs(diff.y) > .1) {
+          if (window.innerWidth < window.innerHeight) {
+              if (angle > 157.5 && angle < 202.5)
+                  mLevel35.set("right");
+              if (angle > 337.5 || angle < 22.5)
+                  mLevel35.set("left");
+              if (angle > 247.5 && angle < 292.5)
+                  mLevel35.set("up");
+              if (angle > 67.5 && angle < 112.5)
+                  mLevel35.set("down");
+              if (angle > 22.5 && angle < 67.5)
+                  mLevel35.set("leftdown");
+              if (angle > 202.5 && angle < 247.5)
+                  mLevel35.set("rightup");
+              if (angle > 112.5 && angle < 157.5)
+                  mLevel35.set("rightdown");
+              if (angle > 292.5 && angle < 337.5)
+                  mLevel35.set("leftup");
+          } else {
+              if (angle > 157.5 && angle < 202.5)
+                  mLevel35.set("down");
+              if (angle > 337.5 || angle < 22.5)
+                  mLevel35.set("up");
+              if (angle > 247.5 && angle < 292.5)
+                  mLevel35.set("right");
+              if (angle > 67.5 && angle < 112.5)
+                  mLevel35.set("left");
+
+              if (angle > 22.5 && angle < 67.5)
+                  mLevel35.set("leftup");
+
+              if (angle > 202.5 && angle < 247.5)
+                  mLevel35.set("rightdown");
+
+              if (angle > 112.5 && angle < 157.5)
+                  mLevel35.set("leftdown");
+              if (angle > 292.5 && angle < 337.5)
+                  mLevel35.set("rightup");
+
+          }
+      }
+
+    }else     if(mLevel35.isWin == false){
+          if (Math.abs(diff.x) > .1 || Math.abs(diff.y) > .1) {
+              if (window.innerWidth < window.innerHeight) {
+                  if (angle > 157.5 && angle < 202.5)
+                      mLevel35.set("right");
+                  if (angle > 337.5 || angle < 22.5)
+                      mLevel35.set("left");
+                  if (angle > 247.5 && angle < 292.5)
+                      mLevel35.set("up");
+                  if (angle > 67.5 && angle < 112.5)
+                      mLevel35.set("down");
+                  if (angle > 22.5 && angle < 67.5)
+                      mLevel35.set("leftdown");
+                  if (angle > 202.5 && angle < 247.5)
+                      mLevel35.set("rightup");
+                  if (angle > 112.5 && angle < 157.5)
+                      mLevel35.set("rightdown");
+                  if (angle > 292.5 && angle < 337.5)
+                      mLevel35.set("leftup");
+              } else {
+                  if (angle > 157.5 && angle < 202.5)
+                      mLevel35.set("down");
+                  if (angle > 337.5 || angle < 22.5)
+                      mLevel35.set("up");
+                  if (angle > 247.5 && angle < 292.5)
+                      mLevel35.set("right");
+                  if (angle > 67.5 && angle < 112.5)
+                      mLevel35.set("left");
+
+                  if (angle > 22.5 && angle < 67.5)
+                      mLevel35.set("leftup");
+
+                  if (angle > 202.5 && angle < 247.5)
+                      mLevel35.set("rightdown");
+
+                  if (angle > 112.5 && angle < 157.5)
+                      mLevel35.set("leftdown");
+                  if (angle > 292.5 && angle < 337.5)
+                      mLevel35.set("rightup");
+
+              }
+          }
+
+        }
+
+
+
 
     }
-    if (mLevel6.isWin == true && type == 2 && mLevel6.winCounter >= 100) {
+
+
+    if (mLevel35.isWin == true && type == 2 && mLevel35.winCounter >= 100) {
         Handle_Menu(2);
     }
 }
-
 function Draw() {
     requestAnimationFrame(Draw);
     renderer.render(scene, camera);
     if (mFbx_Boy == null || mTex_hand == null) {
         return;
     }
-    if (mLevel6.winCounter < 100) {
-        mLevel6.update();
+    if (mLevel35.winCounter < 100) {
+        mLevel35.update();
+
     }
-    // if (window.innerWidth < window.innerHeight) {
+    if (window.innerWidth < window.innerHeight) {
         portrait();
-    // } else {
-    //     landscap();
-    // }
-    for (var i = 0; i < 50 && sanim > .2 && mLevel6.isWin; i++) {
+    } else {
+        landscap();
+    }
+    for (var i = 0; i < 50 && sanim > .2 && mLevel35.isWin; i++) {
         anim[i].position.x += anim[i].vx;
         anim[i].position.y += anim[i].vy;
         anim[i].visible = true;
@@ -593,11 +651,10 @@ function Draw() {
 }
 
 function portrait() {
-    if (mLevel6.winCounter < 100) {
+    if (mLevel35.winCounter < 100) {
         camera.rotation.set(0.5, 0, 0);
         camera.position.set(0, -Confetti - 57, -78);
-        if (mLevel6.isWin) {
-
+        if (mLevel35.isWin) {
             if (Confetti < 40) {
                 Confetti *= 1.1;
                 mTex_refress.visible = false;
@@ -610,22 +667,19 @@ function portrait() {
                 }
             }
         } else {
-            DrawLbl(mTex_fonts[0], "Level 6", 0, -280, fcolor, 40);
+            DrawLbl(mTex_fonts[0], CURLVL, 0, -280, fcolor, 40);
             DrawLbl(mTex_fonts[1], "MAKE A COPY", 0, -100, fcolor, 25);
             DrawLbl(mTex_fonts[2], "(Swipe to paint)", 0, -70, fcolor, 22);
             for (var i = 0; i < mTex_fonts.length; i++) {
                 mTex_fonts[i].rotation = 0;
             }
-            mTex_refress.x = 150;
-            mTex_refress.y = -100;
-            mTex_refress.rotation = 0;
-            mTex_refress.width = 54;
-            mTex_refress.height = 54;
+            drawImg(mTex_refress,150,-100,54,54,0);
         }
-    } else {
+      }
+    else {
         camera.position.set(0, -57, -78);
         camera.rotation.set(0.5, 0, 0);
-        DrawLbl(mTex_fonts[0], "Level 6", 0, -280, fcolor, 40);
+        DrawLbl(mTex_fonts[0], NXTLVL, 0, -280, fcolor, 40);
         DrawLbl(mTex_fonts[1], "MAKE A COPY", 0, -100, fcolor, 25);
         DrawLbl(mTex_fonts[2], "(Swipe to paint)", 0, -70, fcolor, 22);
         for (var i = 0; i < mTex_fonts.length; i++) {
@@ -653,49 +707,29 @@ function portrait() {
 
     } else {
         mTex_hand.visible = false;
-
         mTex_Swipe.visible = false;
     }
-    mTex_Play.anchor.y = ThreeUI.anchors.bottom;
-    mTex_Play.anchor.x = ThreeUI.anchors.center;
-    mTex_Play.y = 30;
-    mTex_Play.x = 0;
-    mTex_Play.visible = true;
-    mTex_Play.width = 82 * mTex_Play.s;
-    mTex_Play.height = 32 * mTex_Play.s;
+    drawImg(mTex_Play,0,30,82 * mTex_Play.s,32 * mTex_Play.s,0,ThreeUI.anchors.center,ThreeUI.anchors.bottom);
     mTex_Play.s += mTex_Play.vx;
-    mTex_Play.rotation = 0;
-
-    mTex_lvl2.x = 0;
-    mTex_lvl2.y = -190;
-    mTex_lvl2.width = 120;
-    mTex_lvl2.height = 120;
-    mTex_bg.rotation = 270;
-    mTex_bg.x = 0;
-    mTex_bg.y = -190;
-    mTex_bg.width = 120;
-    mTex_bg.height = 120;
-
+    drawImg(mTex_lvl2,0,-190,120,120,0);
+    drawImg(mTex_bg,0,-190,120,120,0);
     if (mTex_Play.width > 100) {
         mTex_Play.vx = -.005;
     }
     if (mTex_Play.width < 80) {
         mTex_Play.vx = .005;
     }
-
 }
 
 function landscap() {
-
-
     for (var i = 0; i < mTex_fonts.length; i++) {
         mTex_fonts[i].rotation = 270;
     }
-    if (mLevel6.winCounter < 100) {
+    if (mLevel35.winCounter < 100) {
         camera.rotation.set(.29, 0, -1.58);
         camera.position.set(0, -Confetti - 17, -123);
 
-        if (mLevel6.isWin) {
+        if (mLevel35.isWin) {
             if (Confetti < 40) {
                 camera.position.set(0, -Confetti - 17, 0 - 123);
                 Confetti *= 1.1;
@@ -709,7 +743,7 @@ function landscap() {
                 }
             }
         } else {
-            DrawLbl(mTex_fonts[0], "Level 6", -500, 0, fcolor, 70);
+            DrawLbl(mTex_fonts[0], CURLVL, -500, 0, fcolor, 70);
             DrawLbl(mTex_fonts[1], "MAKE A COPY", -230, 0, fcolor, 40);
             DrawLbl(mTex_fonts[2], "(Swipe to paint)", -180, 0, fcolor, 36);
         }
@@ -717,7 +751,7 @@ function landscap() {
     } else {
         camera.rotation.set(.29, 0, -1.58);
         camera.position.set(0, -17, -123);
-        DrawLbl(mTex_fonts[0], "Level 6", -500, 0, fcolor, 70);
+        DrawLbl(mTex_fonts[0], NXTLVL, -500, 0, fcolor, 70);
         DrawLbl(mTex_fonts[1], "MAKE A COPY", -230, 0, fcolor, 40);
         DrawLbl(mTex_fonts[2], "(Swipe to paint)", -180, 0, fcolor, 36);
     }
@@ -745,16 +779,7 @@ function landscap() {
         mTex_Swipe.visible = false;
     }
 
-
-
-
-
-    mTex_Play.anchor.x = ThreeUI.anchors.right;
-    mTex_Play.anchor.y = ThreeUI.anchors.center;
-    mTex_Play.x = 70;
-    mTex_Play.rotation = 270;
-    mTex_Play.width = 164 * mTex_Play.s;
-    mTex_Play.height = 64 * mTex_Play.s;
+    drawImg(mTex_Play,70,0,164 * mTex_Play.s,64 * mTex_Play.s,270,ThreeUI.anchors.right,ThreeUI.anchors.center);
     mTex_Play.s += mTex_Play.vx;
     if (mTex_Play.width > 184) {
         mTex_Play.vx = -.003;
@@ -762,40 +787,32 @@ function landscap() {
     if (mTex_Play.width < 130) {
         mTex_Play.vx = .003;
     }
-    mTex_refress.x = -240;
-    mTex_refress.y = -260;
-    mTex_refress.width = 84;
-    mTex_refress.height = 84;
-    mTex_lvl2.x = -380;
-    mTex_lvl2.y = 0;
-    mTex_lvl2.width = 180;
-    mTex_lvl2.height = 180;
-    mTex_bg.rotation = 270;
-    mTex_bg.x = -380;
-    mTex_bg.y = 0;
-    mTex_bg.width = 180;
-    mTex_bg.height = 180;
+    drawImg(mTex_lvl2,-380,0,180,180,270);
+    drawImg(mTex_bg  ,-380,0,180,180,270);
+    drawImg(mTex_refress  ,-240,-260,84,84,270);
+
 }
 
 function Handle_Menu(clickval) {
     if (clickval == 2) {
-      // if(isMobile.Android()){
-      //   dapi.openStoreUrl('https://play.google.com/store/apps/details?id=com.AppSwim.LinePaint');
-      // }else{
-      //   dapi.openStoreUrl('https://apps.apple.com/us/app/line-paint/id1488438435');
-      // }
-      if(isMobile.Android()){
-        mraid.open('https://play.google.com/store/apps/details?id=com.AppSwim.LinePaint');
-      }else{
-        mraid.open('https://apps.apple.com/us/app/line-paint/id1488438435');
-      }
+        // if(isMobile.Android()){
+        //   dapi.openStoreUrl('https://play.google.com/store/apps/details?id=com.AppSwim.LinePaint');
+        // }else{
+        //   dapi.openStoreUrl('https://apps.apple.com/us/app/line-paint/id1488438435');
+        // }
+        if (isMobile.Android()) {
+            dapi.open('https://play.google.com/store/apps/details?id=com.AppSwim.LinePaint');
+        } else {
+            dapi.open('https://apps.apple.com/us/app/line-paint/id1488438435');
+        }
     } else {
         for (let i = 0; i < drowline.length; i++) {
             drowline[i].visible = false;
             drowline[i].po = "0";
         }
-        mFbx_Boy.position.set(pos4[6][0], pos4[6][1], 3);
-        mLevel6.position = 6;
+        mLevel35.position = 0;
+        mFbx_Boy.position.set(pos4[mLevel35.position][0], pos4[mLevel35.position][1], 3);
+
     }
 }
 
@@ -887,3 +904,84 @@ var isMobile = {
     Windows: function() { return navigator.userAgent.match(/IEMobile/i) || navigator.userAgent.match(/WPDesktop/i); },
     any: function() { return (isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Opera() || isMobile.Windows()); }
 };
+
+function GetAngle(d, e) {
+
+    if (d == 0)
+        return e >= 0 ? Math.PI / 2 : -Math.PI / 2;
+    else if (d > 0)
+        return Math.atan(e / d);
+    else
+        return Math.atan(e / d) + Math.PI;
+
+}
+function drawImg(img,x,y,w,h,r,ax,ay){
+  if(ax){
+    img.anchor.x = ax;//ThreeUI.anchors.center;
+    img.anchor.y = ay;//ThreeUI.anchors.bottom;
+  }
+  img.x = x;
+  img.y = y;
+  img.width = w;
+  img.height =h;
+  img.rotation=r;
+}
+var sx = 0,
+    sy = 0,
+    sz = 0,
+    rx = 0,
+    ry = 0,
+    rz = 0;
+function dealWithKeyboard(e) {
+    var vs = 1,
+        rs = .01;
+    switch (e.keyCode) {
+        case 37:
+            sx = sx - vs;
+            break;
+        case 38:
+            sz = sz + vs;
+            break;
+        case 39:
+            sx = sx + vs;
+            break;
+        case 40:
+            sz = sz - vs;
+            break;
+        case 65:
+
+            sy = sy + vs;
+            break;
+        case 66:
+        case 90:
+            sy = sy - vs;
+            break;
+        case 49:
+            rx = rx - rs;
+            break;
+        case 50:
+            rx = rx + rs;
+            break;
+        case 52:
+            ry = ry + rs;
+            break;
+        case 53:
+            ry = ry - rs;
+            break;
+        case 55:
+            rz = rz + rs;
+            break;
+        case 56:
+            rz = rz - rs;
+            break;
+        case 57:
+            sx = sy = sz = 0;
+            break;
+        case 54:
+            rx = ry = rz = 0;
+            break;
+    }
+    console.log("sx = " + sx.toFixed(2) + ", sy = " + sy.toFixed(2) + ", sz =" + sz.toFixed(2));
+    console.log(e.keyCode + " rx = " + rx.toFixed(2) + ", ry = " + ry.toFixed(2) + ", rz =" + rz.toFixed(2));
+
+}

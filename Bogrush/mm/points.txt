@@ -1,0 +1,21 @@
+1 Please write name male- kevin,Femail Karen
+2 please arrange rolls do not overlap each other
+3 Please remove score in scorebox
+4 please write level number in center top of screen
+
+can level will be easy to hard
+ex level 1 easy then level goes hard as clear levels
+
+
+
+
+
+Bannner
+IOS: 	 ca-app-pub-3564677817008292/6682462574
+Android: ca-app-pub-3564677817008292/1952880071
+
+App ID
+IOS: ca-app-pub-3564677817008292~4702972978
+Android: ca-app-pub-3564677817008292~6874034269
+
+
