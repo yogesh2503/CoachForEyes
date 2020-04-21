@@ -11,15 +11,16 @@ var mPlan_Road = [],
     mPlan_Virus = [],
     mPlan_Player = [],
     mPlan_Police = [],
-    mPlan_Home, mPlan_Splash;
+    mPlan_Home, mPlan_Splash, mPlan_Logo;
 var mTex_hand, mTex_refress, mTex_Swipe, mTex_Play, mTex_logo, mTex_Menu, mTex_leader;
 var mTex_soundon, mTex_soundoff, mTex_name, mTex_score, mTex_nam_02, mTex_nam_03, mTex_nexticn;
 var mTex_gameover, mTex_gamepaus, mTex_gamewin, mTex_scorebox, mTex_popup, mTex_homeicn, mTex_playicn, mTex_retryicn;
-var mTex_platinum, mTex_silvermedal, mTex_bronze, mTex_goldmedal, mTex_leaderboard, mTex_Rolls, mTex_selbar;
+var mTex_platinum, mTex_silvermedal, mTex_bronze, mTex_goldmedal, mTex_leaderboard, mTex_Rolls, mTex_selbar, mTex_Rate, mTex_share;
 var mTex_kevin, mTex_karen, mTex_level;
 var mTex_Heart = [],
     mTex_EHeart = [],
     anim = [];
+var mp3_rollCollect, mp3_Over, mp3_hit, mp3_win, audioLoader, listener;
 var CANVAS_WIDTH = 480,
     CANVAS_HEIGHT = 854;
 var BASEURL = "https://hututusoftwares.com/Games/Playble/";
@@ -57,6 +58,7 @@ function initstart() {
     input = document.createElement('input');
     input.setAttribute('type', 'text');
     input.setAttribute('id', 'fname');
+    input.setAttribute('maxlength', '10');
     input.setAttribute('placeholder', 'User Name');
     input_div.appendChild(input);
 
@@ -83,6 +85,7 @@ function initstart() {
 
     function onError() {}
     var textureLoader = new THREE.TextureLoader(manager);
+    tex_logo = textureLoader.load(BASEURL + 'assets/name.png');
     mTex_road = textureLoader.load(BASEURL + 'assets/road.png');
     tex_vir = textureLoader.load(BASEURL + 'assets/virus.png');
     tex_paperroll = textureLoader.load(BASEURL + 'assets/paperroll.png');
@@ -103,9 +106,6 @@ function initstart() {
         scene.add(mPlan_Road[i]);
         mPlan_Road[i].visible = false;
     }
-
-
-
     var geometry = new THREE.PlaneGeometry(8, 8);
     var material = new THREE.MeshBasicMaterial({ map: tex_home, transparent: true });
     mPlan_Home = new THREE.Mesh(geometry, material);
@@ -119,8 +119,17 @@ function initstart() {
     mPlan_Splash.visible = true;
 
 
+    var geometry = new THREE.PlaneGeometry(8, 2);
+    var material = new THREE.MeshBasicMaterial({ map: tex_logo, transparent: true });
+    mPlan_Logo = new THREE.Mesh(geometry, material)
+    scene.add(mPlan_Logo);
+    mPlan_Logo.visible = false;
 
-    var geometry = new THREE.PlaneGeometry(2, 3);
+
+
+
+
+    var geometry = new THREE.PlaneGeometry(1.2, 2.4);
     var material = new THREE.MeshBasicMaterial({ map: tex_male, transparent: true });
     mPlan_Player.push(new THREE.Mesh(geometry, material));
     scene.add(mPlan_Player[0]);
@@ -170,22 +179,17 @@ function initstart() {
 
     mPly.paer1 = mPlan_Paper[0].clone();
     mPly.paer1.visible = false;
-    mPly.paer1.position.set(-1, -.7, 0);
+    mPly.paer1.position.set(-.61, -.3, 0);
     mPly.group.add(mPly.paer1);
 
 
     mPly.paer2 = mPlan_Paper[0].clone();
-    mPly.paer2.position.set(1, -.7, 0);
+    mPly.paer2.position.set(.61, -.3, 0);
     mPly.paer2.visible = false;
     mPly.group.add(mPly.paer2);
 
-
-
     mPly.group.visible = false;
     scene.add(mPly.group);
-
-
-
 
     for (var i = 0; i < 50; i++) {
         var material = new THREE.MeshBasicMaterial({ color: createColor() });
@@ -197,8 +201,41 @@ function initstart() {
         scene.add(anim[i]);
     }
 
+    listener = new THREE.AudioListener();
+    audioLoader = new THREE.AudioLoader();
+    camera.add(listener);
+    mp3_rollCollect = Array();
+    mp3_rollCollect.push(new THREE.Audio(listener));
+    mp3_rollCollect.push(new THREE.Audio(listener));
+    mp3_rollCollect.push(new THREE.Audio(listener));
+
+    mp3_Over = new THREE.Audio(listener);
+
+
+    mp3_hit = new THREE.Audio(listener);
+    mp3_win = new THREE.Audio(listener);
+
+    audioLoader.load('assets/collectRoll.mp3', function(buffer) {
+        for (let i = 0; i < mp3_rollCollect.length; i++) {
+            mp3_rollCollect[i].setBuffer(buffer);
+            mp3_rollCollect[i].setVolume(1.0);
+        }
+    });
+    audioLoader.load('assets/gameover.mp3', function(buffer) {
+        mp3_Over.setBuffer(buffer);
+        mp3_Over.setVolume(1.0);
+    });
+    audioLoader.load('assets/hit.mp3', function(buffer) {
+        mp3_hit.setBuffer(buffer);
+        mp3_hit.setVolume(1.0);
+    });
+    audioLoader.load('assets/level_complete.mp3', function(buffer) {
+        mp3_win.setBuffer(buffer);
+        mp3_win.setVolume(1.0);
+    });
 
     // AssetLoader.add.image(BASEURL + 'assets/name.png');
+    AssetLoader.add.webFont('PressStart2P', 'js/font.css');
     AssetLoader.add.image(BASEURL + 'assets/hand.png');
     AssetLoader.add.image(BASEURL + 'assets/refress.png');
     AssetLoader.add.image(BASEURL + 'assets/swipe.png');
@@ -224,7 +261,6 @@ function initstart() {
     AssetLoader.add.image(BASEURL + 'assets/nexticn.png');
     AssetLoader.add.image(BASEURL + 'assets/leader.png');
 
-
     AssetLoader.add.image(BASEURL + 'assets/platinum.png');
     AssetLoader.add.image(BASEURL + 'assets/silvermedal.png');
     AssetLoader.add.image(BASEURL + 'assets/bronze.png');
@@ -233,10 +269,12 @@ function initstart() {
     AssetLoader.add.image(BASEURL + 'assets/leaderboard.png');
     AssetLoader.add.image(BASEURL + 'assets/serbar.png');
 
-
     AssetLoader.add.image(BASEURL + 'assets/kevin.png');
     AssetLoader.add.image(BASEURL + 'assets/karen.png');
     AssetLoader.add.image(BASEURL + 'assets/level.png');
+
+    AssetLoader.add.image(BASEURL + 'assets/rate.png');
+    AssetLoader.add.image(BASEURL + 'assets/share.png');
 
     AssetLoader.progressListener = function(progress) {
         // console.info('Progress: ' + (progress * 50) + '%');
@@ -244,7 +282,7 @@ function initstart() {
     AssetLoader.load(function() {
         // mTex_logo = loadUI(BASEURL + 'assets/logo.png', 0, 0, 0);
         // mTex_logo.visible = true;
-        mTex_popup = loadUI(BASEURL + 'assets/popup.png', 0, 0, 0);
+        mTex_popup = loadUI(BASEURL + 'assets/popup.png', 0, -60, 0);
         mTex_hand = loadUI(BASEURL + 'assets/hand.png', 0, 0, 0);
         mTex_refress = loadUI(BASEURL + 'assets/refress.png', 0, -0, 0);
         mTex_Swipe = loadUI(BASEURL + 'assets/swipe.png', 0, -0, 0);
@@ -255,40 +293,42 @@ function initstart() {
 
         mTex_soundon = loadUI(BASEURL + 'assets/soundon.png', -0, 0, 0);
         mTex_soundoff = loadUI(BASEURL + 'assets/soundoff.png', -0, 0, 0);
-        mTex_name = loadUI(BASEURL + 'assets/name.png', 0, 0, 0);
+        mTex_name = loadUI(BASEURL + 'assets/name.png', 0, 0, 0.7);
 
-        mTex_gameover = loadUI(BASEURL + 'assets/gameover1.png', 0, -180, 0);
-        mTex_gamepaus = loadUI(BASEURL + 'assets/gamepause1.png', 0, -180, 0);
-        mTex_gamewin = loadUI(BASEURL + 'assets/gamewin1.png', 0, -180, 0);
+        mTex_gameover = loadUI(BASEURL + 'assets/gameover1.png', 0, -240, 0);
+        mTex_gamepaus = loadUI(BASEURL + 'assets/gamepause1.png', 0, -240, 0);
+        mTex_gamewin = loadUI(BASEURL + 'assets/gamewin1.png', 0, -240, 0);
         mTex_scorebox = loadUI(BASEURL + 'assets/scorebox.png', 0, 0, 0);
         mTex_homeicn = loadUI(BASEURL + 'assets/homeicn.png', 0, 0, 0);
         mTex_playicn = loadUI(BASEURL + 'assets/playicn.png', 0, 0, 0);
         mTex_retryicn = loadUI(BASEURL + 'assets/retryicn.png', 0, 0, 0);
         mTex_score = loadUI(BASEURL + 'assets/score.png', 0, 0, 0);
-        mTex_nam_02 = loadUI(BASEURL + 'assets/nam-02.png', 0, 0, 0);
-        mTex_nam_03 = loadUI(BASEURL + 'assets/nam-03.png', 0, 0, 0);
+        mTex_nam_02 = loadUI(BASEURL + 'assets/nam-02.png', 0, 0, 0.7);
+        mTex_nam_03 = loadUI(BASEURL + 'assets/nam-03.png', 0, 0, 0.7);
         mTex_nexticn = loadUI(BASEURL + 'assets/nexticn.png', 0, 0, 0);
         mTex_leader = loadUI(BASEURL + 'assets/leader.png', 0, 0, 0);
 
-        mTex_platinum = loadUI(BASEURL + 'assets/platinum.png', 170, 30, 0);
-        mTex_silvermedal = loadUI(BASEURL + 'assets/silvermedal.png', 170, -60, 0);
-        mTex_bronze = loadUI(BASEURL + 'assets/bronze.png', -170, -60, 0);
-        mTex_goldmedal = loadUI(BASEURL + 'assets/goldmedal.png', -170, 30, 0);
-        mTex_leaderboard = loadUI(BASEURL + 'assets/leaderboard.png', 0, -180, 0);
-        mTex_Rolls = loadUI(BASEURL + 'assets/rolls.png', 0, -180, 0);
+        mTex_platinum = loadUI(BASEURL + 'assets/platinum.png', 170, -20, 0);
+        mTex_silvermedal = loadUI(BASEURL + 'assets/silvermedal.png', 170, -120, 0);
+        mTex_bronze = loadUI(BASEURL + 'assets/bronze.png', -170, -120, 0);
+        mTex_goldmedal = loadUI(BASEURL + 'assets/goldmedal.png', -170, -20, 0);
+        mTex_leaderboard = loadUI(BASEURL + 'assets/leaderboard.png', 0, -240, 0);
+        mTex_Rolls = loadUI(BASEURL + 'assets/rolls.png', 0, -180, 0.7);
         mTex_selbar = loadUI(BASEURL + 'assets/serbar.png', 0, 0, 0);
 
         mTex_kevin = loadUI(BASEURL + 'assets/kevin.png', 0, 0, 0);
         mTex_karen = loadUI(BASEURL + 'assets/karen.png', 0, 0, 0);
         mTex_level = loadUI(BASEURL + 'assets/level.png', 0, 0, 0);
 
-
+        mTex_Rate = loadUI(BASEURL + 'assets/rate.png', 0, 0, 0);
+        mTex_share = loadUI(BASEURL + 'assets/share.png', 0, 0, 0);
         for (var i = 0; i < 3; i++) {
-            mTex_Heart.push(loadUIS(BASEURL + 'assets/heart.png', 32 + i * 64, 30, 1));
-            mTex_EHeart.push(loadUIS(BASEURL + 'assets/heartempty.png', 32 + i * 64, 30, 1));
+            mTex_Heart.push(loadUIS(BASEURL + 'assets/heart.png', 16 + i * 32, 16, .5));
+            mTex_EHeart.push(loadUIS(BASEURL + 'assets/heartempty.png', 16 + i * 32, 16, .5));
         }
         for (var i = 0; i < mTex_fonts.length; i++) {
-            mTex_fonts[i] = createTexts('100', 200, '#000', ThreeUI.anchors.center, ThreeUI.anchors.center, 'center', 'HanaleiFill');
+            mTex_fonts[i] = createTexts('100', 200, '#000', ThreeUI.anchors.center, ThreeUI.anchors.center, 'center', 'PressStart2P');
+            DrawLbl(mTex_fonts[i], "100", 0, 0, "#ff0000", 28);
             mTex_fonts[i].visible = false;
         }
         Counter = 0;
@@ -351,10 +391,7 @@ function touchEvent(e, type) {
         isClick = true;
     }
     if (type == 2) {
-
         isClick = false;
-
-
     }
     switch (GameScreen) {
         case GAMEMENU:
@@ -371,11 +408,9 @@ function touchEvent(e, type) {
                     if (mPly.name == '') {
                         DrawLbl(mTex_fonts[0], "Please enter name", 0, 0, "#ff0000", 28);
                     } else {
-                        //                        localStorage.setItem("name", mPly.name);
-                        setStore();
-                        setScreen(GAMEMENU);
+                        console.log("readbyID~~~GAMENAME");
+                        readbyID(mPly.name);
                     }
-                    console.log(name);
                 }
                 mSel = 0;
             }
@@ -391,16 +426,42 @@ function touchEvent(e, type) {
         case GAMEOVER:
         case GAMEWIN:
         case GAMEPAUSE:
-        case GAMELEADER:
             handle_WinOver(e, type);
             break;
+        case GAMELEADER:
+        case GAMEINVITE:
+            bounds = mTex_homeicn.getBounds();
+            if (ThreeUI.isInBoundingBox(coords.x, coords.y, bounds.x, bounds.y, bounds.width, bounds.height)) {
+                mSel = 3;
+            }
+            bounds = mTex_share.getBounds();
+            if (ThreeUI.isInBoundingBox(coords.x, coords.y, bounds.x, bounds.y, bounds.width, bounds.height)) {
+                mSel = 2;
+            }
+            bounds = mTex_nexticn.getBounds();
+            if (ThreeUI.isInBoundingBox(coords.x, coords.y, bounds.x, bounds.y, bounds.width, bounds.height)) {
+                mSel = 1;
+            }
+            if (type == 2) {
+                if (mSel == 2) {
+                    ShareApp();
+                }
+                if (mSel == 1)
+                    setScreen(GAMESTART);
+                if (mSel == 3)
+                    setScreen(GAMEMENU);
+                mSel = 0;
+            }
+            break;
     }
-
 }
 var sanim = 1;
+var ys = .81;
 
 function Draw() {
-    requestAnimationFrame(Draw);
+    setTimeout(function() { requestAnimationFrame(Draw); }, 11);
+
+
     renderer.render(scene, camera);
     gameUI.render(renderer);
     if (mTex_Play == null) {
@@ -409,6 +470,14 @@ function Draw() {
     }
     switch (GameScreen) {
         case GAMELOGO:
+
+            if (window.innerHeight < window.innerWidth) {
+                mPlan_Logo.rotation.z = Math.PI * .5;
+                mPlan_Logo.scale.set(1.75, 1.75, 1.75);
+            } else {
+                mPlan_Logo.rotation.z = 0;
+                mPlan_Logo.scale.set(1, 1, 1);
+            }
             if (Counter > 100) {
                 getStore();
                 if (mPly.name) {
@@ -419,13 +488,13 @@ function Draw() {
             }
             break;
         case GAMEMENU:
-            DrawTransScal(mTex_Play, -138, 280, 240, 120, mSel == 1 ? 1.1 : 1, mSel == 1 ? 0.5 : 1);
-            DrawTransScal(mTex_soundon, 138, 280, 240, 120, mSel == 2 ? 1.1 : 1, mSel == 2 ? 0.5 : 1);
-            DrawTransScal(mTex_soundoff, 138, 280, 240, 120, mSel == 2 ? 1.1 : 1, mSel == 2 ? 0.5 : 1);
+            DrawTransScal(mTex_Play, -100, 240, 160, 80, mSel == 1 ? 1.1 : 1, mSel == 1 ? 0.5 : 1);
+            DrawTransScal(mTex_soundon, 100, 240, 160, 80, mSel == 2 ? 1.1 : 1, mSel == 2 ? 0.5 : 1);
+            DrawTransScal(mTex_soundoff, 100, 240, 160, 80, mSel == 2 ? 1.1 : 1, mSel == 2 ? 0.5 : 1);
+            DrawTransScal(mTex_Rate, -60, 320, 100, 100, mSel == 3 ? 1.1 : 1, mSel == 3 ? 0.5 : 1);
+            DrawTransScal(mTex_leader, 60, 320, 128, 128, (mSel == 4 ? 1.1 : 1) * ys, mSel == 4 ? 0.5 : 1);
             mTex_soundon.visible = isSound;
             mTex_soundoff.visible = !isSound;
-
-
             break;
         case GAMENAME:
             // DrawTransScal(mTex_Play, 0, 100, 256, 64, mSel == 1 ? 1.1 : 1, mSel == 1 ? 0.5 : 1);
@@ -452,12 +521,11 @@ function Draw() {
             //     mPlan_Virus[i].position.set(-7, -5.7 + i * .5, 0);
             //     mPlan_Virus[i].visible = true;
             // }
-
             break;
         case GAMEPLAY:
             mPly.update();
             if (sanim > .1) {
-                sanim -= .015;
+                sanim -= .005;
             }
             for (var i = 0; i < anim.length && sanim > .1; i++) {
                 anim[i].position.x += anim[i].vx;
@@ -465,47 +533,49 @@ function Draw() {
                 anim[i].vy -= .01;
                 anim[i].rotation.z += .1;
                 anim[i].scale.set(sanim, sanim, sanim);
-                if (sanim <= .14) {
+                if (sanim <= .12) {
                     anim[i].visible = false;
-                    mTex_fonts[0].visible = false;
+                    mTex_fonts[1].visible = false;
                 }
             }
-
-
             break;
         case GAMEOVER:
-            DrawTransScal(mTex_homeicn, -150, 200, 128, 128, mSel == 2 ? 1.1 : 1, mSel == 2 ? 0.5 : 1);
-            DrawTransScal(mTex_leader, 0, 200, 128, 128, mSel == 3 ? 1.1 : 1, mSel == 3 ? 0.5 : 1);
-            DrawTransScal(mTex_retryicn, 150, 200, 128, 128, mSel == 1 ? 1.1 : 1, mSel == 1 ? 0.5 : 1);
-            break;
         case GAMEPAUSE:
-            DrawTransScal(mTex_homeicn, -150, 200, 128, 128, mSel == 2 ? 1.1 : 1, mSel == 2 ? 0.5 : 1);
-            DrawTransScal(mTex_leader, 0, 200, 128, 128, mSel == 3 ? 1.1 : 1, mSel == 3 ? 0.5 : 1);
-            DrawTransScal(mTex_playicn, 150, 200, 128, 128, mSel == 1 ? 1.1 : 1, mSel == 1 ? 0.5 : 1);
-            break
         case GAMEWIN:
-            DrawTransScal(mTex_homeicn, -150, 200, 128, 128, mSel == 2 ? 1.1 : 1, mSel == 2 ? 0.5 : 1);
-            DrawTransScal(mTex_leader, 0, 200, 128, 128, mSel == 3 ? 1.1 : 1, mSel == 3 ? 0.5 : 1);
-            DrawTransScal(mTex_nexticn, 150, 200, 128, 128, mSel == 1 ? 1.1 : 1, mSel == 1 ? 0.5 : 1);
+            DrawTransScal(mTex_homeicn, -150 * ys, 130, 128, 128, (mSel == 2 ? 1.1 : 1) * ys, mSel == 2 ? 0.5 : 1);
+            DrawTransScal(mTex_leader, 0, 130, 128, 128, (mSel == 3 ? 1.1 : 1) * ys, mSel == 3 ? 0.5 : 1);
+            //            DrawTransScal(mTex_share, 0, 300, 128, 128, (mSel == 4 ? 1.1 : 1) * ys, mSel == 4 ? 0.5 : 1);
+            if (GameScreen == GAMEOVER) {
+                DrawTransScal(mTex_retryicn, 150 * ys, 130, 128, 128, (mSel == 1 ? 1.1 : 1) * ys, mSel == 1 ? 0.5 : 1);
+            }
+            if (GameScreen == GAMEPAUSE) {
+                DrawTransScal(mTex_playicn, 150 * ys, 130, 128, 128, (mSel == 1 ? 1.1 : 1) * ys, mSel == 1 ? 0.5 : 1);
+            }
+            if (GameScreen == GAMEWIN) {
+                DrawTransScal(mTex_nexticn, 150 * ys, 130, 128, 128, (mSel == 1 ? 1.1 : 1) * ys, mSel == 1 ? 0.5 : 1);
+            }
             break;
         case GAMELEADER:
-            DrawTransScal(mTex_homeicn, 0, 300, 128, 128, mSel == 2 ? 1.1 : 1, mSel == 2 ? 0.5 : 1);
+            DrawTransScal(mTex_homeicn, -0 * ys, 230, 128, 128, (mSel == 2 ? 1.1 : 1) * ys, mSel == 2 ? 0.5 : 1);
             break;
-
+        case GAMEINVITE:
+            DrawTransScal(mTex_share, 0, 50, 128, 128, (mSel == 2 ? 1.1 : 1) * ys, mSel == 2 ? 0.5 : 1);
+            DrawTransScal(mTex_homeicn, -150, 130, 128, 128, (mSel == 3 ? 1.1 : 1) * ys, mSel == 3 ? 0.5 : 1);
+            DrawTransScal(mTex_nexticn, 150, 130, 128, 128, (mSel == 1 ? 1.1 : 1) * ys, mSel == 1 ? 0.5 : 1);
+            break;
     }
 
     Counter++;
     if (isResize > 0) {
         isResize--;
-        var frustumSize = 150;
-        var aspect = window.innerWidth / window.innerHeight;
-        camera.left = frustumSize * aspect / -2;
-        camera.right = frustumSize * aspect / 2;
-        camera.top = frustumSize / 2;
-        camera.bottom = frustumSize / -2;
+
+        camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
-        gameUI.resize();
         renderer.setSize(window.innerWidth, window.innerHeight);
+
+        gameUI.resize();
+
+        //iosSend("log",window.innerWidth" : "+ window.innerHeight)
     }
 }
 
@@ -530,7 +600,15 @@ function handle_Menu(e, type) {
     if (ThreeUI.isInBoundingBox(coords.x, coords.y, bounds.x, bounds.y, bounds.width, bounds.height)) {
         mSel = 2;
     }
-    console.log(type + " mSel = " + mSel);
+    bounds = mTex_Rate.getBounds();
+    if (ThreeUI.isInBoundingBox(coords.x, coords.y, bounds.x, bounds.y, bounds.width, bounds.height)) {
+        mSel = 3;
+    }
+    bounds = mTex_leader.getBounds();
+    if (ThreeUI.isInBoundingBox(coords.x, coords.y, bounds.x, bounds.y, bounds.width, bounds.height)) {
+        mSel = 4;
+    }
+    // console.log(type + " mSel = " + mSel);
 
     if (type == 2) {
         if (mSel == 1) {
@@ -538,6 +616,12 @@ function handle_Menu(e, type) {
         }
         if (mSel == 2) {
             isSound = !isSound;
+        }
+        if (mSel == 3) {
+            RateUs();
+        }
+        if (mSel == 4) {
+            setScreen(GAMELEADER)
         }
         mSel = 0;
     }
@@ -563,22 +647,28 @@ function handle_WinOver(e, type) {
     if (ThreeUI.isInBoundingBox(coords.x, coords.y, bounds.x, bounds.y, bounds.width, bounds.height)) {
         mSel = 3;
     }
-
-    console.log(type + " mSel = " + mSel);
+    bounds = mTex_share.getBounds();
+    if (ThreeUI.isInBoundingBox(coords.x, coords.y, bounds.x, bounds.y, bounds.width, bounds.height)) {
+        mSel = 4;
+    }
+    // console.log(type + " mSel = " + mSel);
 
     if (type == 2) {
         if (mSel == 1) {
             if (GameScreen == GAMEWIN) {
-                mPly.lvl++;
                 setStore();
             }
-            setScreen(GAMESTART);
+            setScreen(GAMEINVITE);
+            // setScreen(GAMESTART);
         }
         if (mSel == 2) {
             setScreen(GAMEMENU);
         }
         if (mSel == 3) {
             setScreen(GAMELEADER);
+        }
+        if (mSel == 4) {
+            setScreen(GAMEINVITE);
         }
         mSel = 0;
     }
@@ -590,13 +680,15 @@ function onWindowResize() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     this.gameUI.resize();
     isResize = 5;
+    var messagehidden = { username: "usr", secretToken: "token" };
+    window.webkit.messageHandlers.userLogin.postMessage(messagehidden);
 }
 
 function setScreen(scr) {
     GameScreen = scr;
     // console.log("GameScreen = " + GameScreen);
     sanim = 0;
-    // GameScreen = GAMEWIN;    
+    // GameScreen = GAMELEADER;
     // mTex_logo.visible = false;
     mTex_platinum.visible = mTex_silvermedal.visible = mTex_bronze.visible = mTex_goldmedal.visible = false;
     mTex_gameover.visible = mTex_gamepaus.visible = mTex_gamewin.visible = mTex_scorebox.visible = false;
@@ -607,6 +699,7 @@ function setScreen(scr) {
     mPlan_Home.visible = mTex_hand.visible = mTex_refress.visible = mTex_Swipe.visible = mTex_Play.visible = false;
     mTex_leaderboard.visible = mTex_Rolls.visible = mTex_selbar.visible = false;
     mTex_kevin.visible = mTex_karen.visible = mTex_level.visible = false;
+    mPlan_Logo.visible = mTex_Rate.visible = mTex_share.visible = false;
     mTex_fonts.forEach(element => { element.visible = false; });
     mPlan_Road.forEach(element => { element.visible = false; });
     mPlan_Paper.forEach(element => { element.visible = false; });
@@ -618,10 +711,19 @@ function setScreen(scr) {
     anim.forEach(element => { element.visible = false; });
 
     mPly.group.visible = false;
+
+    if (GameScreen == GAMESTART || GameScreen == GAMEOVER || GameScreen == GAMEWIN || GameScreen == GAMEINVITE) {
+        Show(1);
+    } else {
+        Show(0);
+    }
+
+
     switch (GameScreen) {
         case GAMELOGO:
             // mTex_logo.visible = true;
-            DrawTexture(mTex_name, 0, 0);
+            // DrawTexture(mTex_name, 0, 0);
+            mPlan_Logo.visible = true;
             break;
         case GAMENAME:
             input_div.style.display = "block";
@@ -645,7 +747,7 @@ function setScreen(scr) {
             break;
         case GAMESTART:
             mPlan_Road.forEach(element => { element.visible = true; });
-            mPlan_Player[mPly.no].position.set(-10, 0, 0);
+            mPlan_Player[mPly.no].position.set(-3, 0, 0);
             mPlan_Player[mPly.no].visible = true;
             mTex_Swipe.visible = true;
             for (let i = 0; i < mPlan_Virus.length; i++) {
@@ -661,11 +763,13 @@ function setScreen(scr) {
                     mPlan_Paper[i].position.x = -100
             }
             DrawTexture(mTex_level, -50, -330);
-            DrawLblA(mTex_fonts[0], "" + mPly.lvl, 20, -318, BUTTONFONT, 40, ThreeUI.anchors.center, ThreeUI.anchors.center, "left");
+            DrawLblA(mTex_fonts[0], "" + mPly.lvl, 20, -314, BUTTONFONT, 30, ThreeUI.anchors.center, ThreeUI.anchors.center, "left");
+            DrawTextureA(mTex_Rolls, 53, 24, ThreeUI.anchors.left, ThreeUI.anchors.bottom);
+            DrawLblA(mTex_fonts[4], "0", 95, 8, BUTTONFONT, 30, ThreeUI.anchors.left, ThreeUI.anchors.bottom, "left");
+
             LoadAds();
             break;
         case GAMEPLAY:
-            DrawTextureA(mTex_Rolls, 80, 25, ThreeUI.anchors.left, ThreeUI.anchors.top);
             mPlan_Road.forEach(element => { element.visible = true; });
             mPlan_Player[mPly.no].visible = true;
             mTex_Heart.forEach(element => { element.visible = true; });
@@ -674,6 +778,9 @@ function setScreen(scr) {
             mPly.set();
             DrawTexture(mTex_level, -50, -330);
             DrawLblA(mTex_fonts[0], "" + mPly.lvl, 20, -318, BUTTONFONT, 40, ThreeUI.anchors.center, ThreeUI.anchors.center, "left");
+            DrawTextureA(mTex_Rolls, 53, 24, ThreeUI.anchors.left, ThreeUI.anchors.bottom);
+            DrawLblA(mTex_fonts[4], "" + mPly.roll, 90, 12, BUTTONFONT, 30, ThreeUI.anchors.left, ThreeUI.anchors.bottom, "left");
+
             break;
         case GAMEOVER:
         case GAMEPAUSE:
@@ -683,28 +790,46 @@ function setScreen(scr) {
             mTex_gameover.visible = (GameScreen == GAMEOVER);
             mTex_gamepaus.visible = (GameScreen == GAMEPAUSE);
             mTex_gamewin.visible = (GameScreen == GAMEWIN);
-            DrawTexture(mTex_score, 0, -84);
-            DrawTexture(mTex_scorebox, 0, -10);
-            DrawTexture(mTex_nam_02, 0, 80);
-            DrawLbl(mTex_fonts[3], "" + mPly.roll, 0, 5, COLOR0, 48);
+            DrawTexture(mTex_score, 0, -140);
+            DrawTexture(mTex_scorebox, 0, -50);
+
+            DrawTexture(Math.random() > .5 ? mTex_nam_02 : mTex_nam_03, 0, 30);
+            DrawLbl(mTex_fonts[3], "" + mPly.roll, 0, -25, COLOR0, 40);
 
             // if(mPly.hroll > 100)
             mTex_platinum.visible = mPly.platinum == 1;
             mTex_silvermedal.visible = mPly.silver == 1;
             mTex_bronze.visible = mPly.bronze == 1;
             mTex_goldmedal.visible = mPly.gold == 1;
+
+
+
+
             //  DrawLbl(mTex_fonts[3], "LEVEL : " + mPly.lvl + "\n\nScore : " + mPly.roll, 0, -40, BUTTONCOL2, 48);
 
-            if (mPly.hroll == 0) {
-                mPly.hroll = mPly.roll;
-            }
+            console.log(mPly.hroll + " ~~~~ " + mPly.roll);
             if (GAMEWIN == GameScreen) {
-                mPly.hroll += mPly.roll;
+                mPly.lvl++;
+                mPly.hroll = parseInt(mPly.hroll) + parseInt(mPly.roll);
+                writeScoreData(mPly.name, mPly.hroll);
+
+            } else if (mPly.hroll == 0) {
+                mPly.hroll = parseInt(mPly.roll);
                 writeScoreData(mPly.name, mPly.hroll);
             }
+
+            console.log(mPly.hroll + " ~~2~~ " + mPly.roll);
             setStore();
             readScore();
             showAds();
+            break;
+        case GAMEINVITE:
+            mPlan_Road.forEach(element => { element.visible = true; });
+            mTex_popup.visible = true;
+            DrawLbl(mTex_fonts[0], "YOU ARE \n\nROLLING IN IT!", 0, -250, COLOR1, 19);
+            DrawLbl(mTex_fonts[1], "SEND TOILET ROLLS TO \n\nYOUR FRIENDS ON US AND", 0, -120, COLOR0, 18);
+            DrawLbl(mTex_fonts[2], "EARN 100 ROLLS FOR \n\nEACH INVITE!", 0, -45, COLOR1, 18);
+
             break;
         case GAMELEADER:
             var str1 = "",
@@ -712,117 +837,127 @@ function setScreen(scr) {
             mPlan_Road.forEach(element => { element.visible = true; });
             mTex_leaderboard.visible = true;
             scoreList.forEach(element => {
-                str1 += " : " + element[0] + "\n";
+                str1 += " :" + element[0] + "\n";
                 str2 += element[1] + "\n";
             });
             mTex_popup.visible = true;
-            DrawLblA(mTex_fonts[2], str1, 50., -70, BUTTONFONT, 30, ThreeUI.anchors.center, ThreeUI.anchors.center, "left");
-            DrawLblA(mTex_fonts[3], str2, 30, -70, BUTTONFONT, 30, ThreeUI.anchors.center, ThreeUI.anchors.center, "right");
+            DrawLblA(mTex_fonts[2], str1, 50., -140, BUTTONFONT, 20, ThreeUI.anchors.center, ThreeUI.anchors.center, "left");
+            DrawLblA(mTex_fonts[3], str2, 60, -140, BUTTONFONT, 20, ThreeUI.anchors.center, ThreeUI.anchors.center, "right");
             break;
 
     }
 }
+const sid = "d";
 
 function getStore() {
     try {
         if (isAndroid == true) {
-            mPly.hroll = app.getInt("score", 0);
-            mPly.lvl = app.getInt("lvl", 1);
-            mPly.bronze = app.getInt("bronze", 0);
-            mPly.silver = app.getInt("silver", 0);
-            mPly.gold = app.getInt("gold", 0);
-            mPly.platinum = app.getInt("platinum", 0);
-            mPly.name = app.getString("name", "");
+            mPly.hroll = app.getInt("score" + sid, 0);
+            mPly.lvl = app.getInt("lvl" + sid, 1);
+            mPly.bronze = app.getInt("bronze" + sid, 0);
+            mPly.silver = app.getInt("silver" + sid, 0);
+            mPly.gold = app.getInt("gold" + sid, 0);
+            mPly.platinum = app.getInt("platinum" + sid, 0);
+            mPly.name = app.getString("name" + sid, "");
         } else {
             if (typeof(Storage) !== "undefined") {
-                mPly.name = localStorage.getItem("name");
+                mPly.name = localStorage.getItem("name" + sid);
                 if (mPly.name) {
-                    mPly.hroll = localStorage.getItem("score");
-                    mPly.lvl = localStorage.getItem("lvl");
-                    mPly.bronze = localStorage.getItem("bronze", 0);
-                    mPly.silver = localStorage.getItem("silver");
-                    mPly.gold = localStorage.getItem("gold");;
-                    mPly.platinum = localStorage.getItem("platinum");
-                    if (mPly.hroll == undefined) {
-                        mPly.hroll = 0;
-                    }
-                    if (mPly.lvl == undefined) {
-                        mPly.lvl = 1;
-                    }
-                    if (mPly.bronze == undefined) {
-                        mPly.bronze = 0;
-                    }
-                    if (mPly.silver == undefined) {
-                        mPly.silver = 0;
-                    }
-                    if (mPly.gold == undefined) {
-                        mPly.gold = 0;
-                    }
-                    if (mPly.platinum == undefined) {
-                        mPly.platinum = 0;
-                    }
+                    mPly.hroll = localStorage.getItem("score" + sid);
+                    mPly.lvl = localStorage.getItem("lvl" + sid);
+                    mPly.bronze = localStorage.getItem("bronze" + sid, 0);
+                    mPly.silver = localStorage.getItem("silver" + sid);
+                    mPly.gold = localStorage.getItem("gold" + sid);;
+                    mPly.platinum = localStorage.getItem("platinum" + sid);
                 } else {
                     mPly.hroll = 0;
                     mPly.lvl = 1;
                     mPly.platinum = mPly.silver = mPly.bronze = mPly.gold = 0;
+                    mPly.name = "";
                     setStore();
                 }
-                console.log(mPly.lvl + "  getStore  " + mPly.hroll + " ~~~~ " + mPly.bronze + " ~~ " + mPly.silver + " ~~ " + mPly.gold + " ~~ " + mPly.platinum);
             }
         }
     } catch (err) {
         console.log("~~~~~~~getStore JS~~~~~~" + err);
     }
+    console.log(mPly.name + "  getStore  " + mPly.hroll + " ~~~~ " + mPly.bronze + " ~~ " + mPly.silver + " ~~ " + mPly.gold + " ~~ " + mPly.platinum);
 }
 
 function setStore() {
-    console.log(mPly.lvl + "  setStore  " + mPly.hroll + " ~~~~ " + mPly.bronze + " ~~ " + mPly.silver + " ~~ " + mPly.gold + " ~~ " + mPly.platinum);
+    // console.log(mPly.name + "  setStore  " + mPly.hroll + " ~~~~ " + mPly.bronze + " ~~ " + mPly.silver + " ~~ " + mPly.gold + " ~~ " + mPly.platinum);
     try {
         if (isAndroid == true) {
-            app.setInt("score", mPly.hroll);
-            app.setInt("lvl", mPly.lvl);
-            app.setInt("bronze", mPly.bronze);
-            app.setInt("silver", mPly.silver);
-            app.setInt("gold", mPly.gold);
-            app.setInt("platinum", mPly.platinum);
-            app.setString("name", mPly.name);
+            app.setInt("score" + sid, mPly.hroll);
+            app.setInt("lvl" + sid, mPly.lvl);
+            app.setInt("bronze" + sid, mPly.bronze);
+            app.setInt("silver" + sid, mPly.silver);
+            app.setInt("gold" + sid, mPly.gold);
+            app.setInt("platinum" + sid, mPly.platinum);
+            app.setString("name" + sid, mPly.name);
         } else {
-            localStorage.setItem("score", mPly.hroll);
-            localStorage.setItem("lvl", mPly.lvl);
-            localStorage.setItem("bronze", mPly.bronze);
-            localStorage.setItem("silver", mPly.silver);
-            localStorage.setItem("gold", mPly.gold);
-            localStorage.setItem("platinum", mPly.platinum);
+            localStorage.setItem("name" + sid, mPly.name);
+            localStorage.setItem("score" + sid, mPly.hroll);
+            localStorage.setItem("lvl" + sid, mPly.lvl);
+            localStorage.setItem("bronze" + sid, mPly.bronze);
+            localStorage.setItem("silver" + sid, mPly.silver);
+            localStorage.setItem("gold" + sid, mPly.gold);
+            localStorage.setItem("platinum" + sid, mPly.platinum);
         }
     } catch (err) {
         console.log("~~~~~~~setStore JS~~~~~~" + err);
     }
-    console.log(mPly.lvl + "    " + mPly.hroll + " ~~~~ " + mPly.bronze + " ~~ " + mPly.silver + " ~~ " + mPly.gold + " ~~ " + mPly.platinum);
+    console.log(mPly.name + "    " + mPly.hroll + " ~~~~ " + mPly.bronze + " ~~ " + mPly.silver + " ~~ " + mPly.gold + " ~~ " + mPly.platinum);
 }
 
 function showAds() {
-
     try {
         if (isAndroid == true)
             app.showAds();
         else {
-            var message = { username: "Michael Phelps", secretToken: "secret" };
-            var one = window.webkit.messageHandlers.userLogin.postMessage(message);
-            console.log("userContentController~~~~~~~one~~~" + one)
+            iosSend("test", "token");
         }
-    } catch (err) {
-        console.log("~~~~~~~showAds JS~~~~~~" + err);
-    }
+    } catch (err) {}
 }
 
 function LoadAds() {
-    console.log("~~~~~~~LoadAds JS~~~~~~");
     try {
         if (isAndroid == true)
             app.LoadAds();
-    } catch (err) {
-        console.log("~~~~~~~LoadAds JS~~~~~~" + err);
-    }
+    } catch (err) {}
+}
+
+function RateUs() {
+    try {
+        if (isAndroid == true)
+            app.RateUs();
+        else {
+            iosSend("rate", "" + mPly.name);
+        }
+    } catch (err) {}
+}
+
+function ShareApp() {
+    mPly.hroll += 100;
+    try {
+        if (isAndroid == true)
+            app.ShareApp(mPly.name);
+        else { iosSend("share", "" + mPly.name); }
+    } catch (err) {}
+}
+
+function Show(visible) {
+    try {
+        if (isAndroid == true)
+            app.Show(visible);
+        else {
+            if (visible) {
+                iosSend("show", "secret");
+            } else {
+                iosSend("hidden", "secret");
+            }
+        }
+    } catch (err) {}
 }
 
 function setnaim(str) {
@@ -832,6 +967,55 @@ function setnaim(str) {
         anim[i].vy = Math.random() - .51;
         anim[i].visible = true;
     }
-    DrawLbl(mTex_fonts[0], str, 0, 0, COLOR1, 48);
+    DrawLbl(mTex_fonts[1], str, 0, 0, COLOR1, 20);
     sanim = 1;
+}
+var sondCont = 0;
+
+function rollSound() {
+    if (isSound) {
+        if (isAndroid == true) {
+            mp3_rollCollect[sondCont].play();
+            sondCont++;
+            sondCont %= mp3_rollCollect.length;
+        } else
+            iosSend("sound", "roll");
+
+    }
+}
+
+function OverSound() {
+    if (isSound) {
+        if (isAndroid == true)
+            mp3_Over.play();
+        else
+            iosSend("sound", "over");
+    }
+}
+
+function WinSound() {
+    if (isSound) {
+        if (isAndroid == true)
+            mp3_win.play();
+        else
+            iosSend("sound", "win");
+
+    }
+}
+
+function hitSound() {
+    if (isSound) {
+        if (isAndroid == true)
+            mp3_hit.play();
+        else
+            iosSend("sound", "hit");
+    }
+}
+
+
+
+
+function iosSend(usr, token) {
+    var messagehidden = { username: usr, secretToken: token };
+    window.webkit.messageHandlers.userLogin.postMessage(messagehidden);
 }

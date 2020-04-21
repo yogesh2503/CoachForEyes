@@ -30,7 +30,18 @@ class Player {
         this.newscore = false;
         this.lifeloss = 0;
         this.over = 0;
-        this.spd = -.1 - this.lvl * .01;
+
+
+        if (this.lvl <= 10)
+            this.spd = -(.1 + this.lvl * .01);
+        else if (this.lvl < 15)
+            this.spd = -.2;
+        else if (this.lvl < 20)
+            this.spd = -.21;
+        else
+            this.spd = -.22;
+
+
         this.vy = 0.01;
         this.roll = 0;
         this.life = 3;
@@ -74,7 +85,7 @@ class Player {
 
         }
         for (let i = 0; i < mPlan_Virus.length && this.over == 0; i++) {
-            if (mPlan_Virus[i].visible && CircRectsOverlap(mPlan_Player[this.no].position.x, mPlan_Player[this.no].position.y, .7, 1.5, mPlan_Virus[i].position.x, mPlan_Virus[i].position.y, 0.2)) {
+            if (mPlan_Virus[i].visible && this.lifeloss <= 0 && CircRectsOverlap(mPlan_Player[this.no].position.x, mPlan_Player[this.no].position.y, .5, 1.0, mPlan_Virus[i].position.x, mPlan_Virus[i].position.y, 0.1)) {
                 mPlan_Virus[i].visible = false;
                 this.checkOver();
             }
@@ -87,37 +98,36 @@ class Player {
 
         }
         for (let i = 0; i < mPlan_Paper.length && this.over == 0; i++) {
-            if (mPlan_Paper[i].visible && CircRectsOverlap(mPlan_Player[this.no].position.x, mPlan_Player[this.no].position.y, 0.7, 1.5, mPlan_Paper[i].position.x, mPlan_Paper[i].position.y, 0.7)) {
+            if (mPlan_Paper[i].visible && CircRectsOverlap(mPlan_Player[this.no].position.x, mPlan_Player[this.no].position.y, 0.6, 1.2, mPlan_Paper[i].position.x, mPlan_Paper[i].position.y, 0.5)) {
                 mPlan_Paper[i].visible = false;
                 this.roll++;
+                rollSound();
                 this.group.visible = true;
                 this.paer1.visible = true;
                 this.paer2.visible = this.roll > 1;
-                DrawLblA(mTex_fonts[4], "" + this.roll, 145, 40, BUTTONFONT, 40, ThreeUI.anchors.left, ThreeUI.anchors.top, "left");
-
-
+                DrawLblA(mTex_fonts[4], "" + mPly.roll, 95, 8, BUTTONFONT, 30, ThreeUI.anchors.left, ThreeUI.anchors.bottom, "left");
                 if (this.roll > this.hroll && this.newscore == false && this.hroll > 0) {
                     // this.hroll = this.roll;
                     this.newscore = true;
-                    setnaim("New Score : " + mPly.hroll);
+                    setnaim("CONGRATULATIONS\n\nNEW SCORE : " + mPly.hroll);
                 }
-                console.log(this.roll + "  " + this.bronze);
+                // console.log(this.roll + "  " + this.bronze);
                 if (this.roll == 100 && this.bronze == 0) {
 
                     this.bronze = 1;
-                    setnaim("CONGRATULATION YOU\n\nACHIEVE BRONZE MEDAL");
+                    setnaim("CONGRATULATIONS\n\nACHIEVE BRONZE MEDAL");
                 }
                 if (this.roll == 200 && this.silver == 0) {
                     this.silver = 1;
-                    setnaim("CONGRATULATION YOU\n\nACHIEVE SILVER MEDAL");
+                    setnaim("CONGRATULATIONS\n\nACHIEVE SILVER MEDAL");
                 }
                 if (this.roll == 300 && this.gold == 0) {
                     this.gold = 1;
-                    setnaim("CONGRATULATION YOU\n\nACHIEVE GOLD MEDAL");
+                    setnaim("CONGRATULATIONS\n\nACHIEVE GOLD MEDAL");
                 }
                 if (this.roll == 500 && this.platinum == 0) {
                     this.platinum = 1;
-                    setnaim("CONGRATULATION YOU\n\nACHIEVE PLATINUM MEDAL");
+                    setnaim("CONGRATULATIONS\n\nACHIEVE PLATINUM MEDAL");
                 }
 
             }
@@ -169,7 +179,10 @@ class Player {
         mPlan_Player[this.no].visible = (this.lifeloss <= 0 || Counter % 4 > 1)
         this.lifeloss--;
 
-        if (mPlan_Player[this.no].position.y > 10 || mPlan_Player[this.no].position.y < -8) {
+        if (this.lifeloss == 0)
+            Show(0);
+
+        if (mPlan_Player[this.no].position.y > 8 || mPlan_Player[this.no].position.y < -8) {
             mPlan_Player[this.no].position.y = 0;
             this.vy = 0;
             this.checkOver();
@@ -181,6 +194,11 @@ class Player {
             this.setVirus();
         }
         if (mPlan_Home.position.x <= 0) {
+            if (this.spd != 0) {
+                WinSound();
+            }
+
+
             this.spd = 0;
             this.vy = 0;
             mPlan_Player[this.no].position.y = -4.5;
@@ -207,11 +225,14 @@ class Player {
         this.life--;
         if (this.life <= 0 && this.over <= 0) {
             this.over = 1;
+            OverSound();
         }
         for (let i = 0; i < mTex_Heart.length; i++) {
             mTex_Heart[i].visible = this.life > i;
         }
         this.lifeloss = 40;
+        hitSound();
+        Show(1);
     }
 
     setMegaRoll() {

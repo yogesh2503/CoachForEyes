@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Corona Figher!</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <style>
+        body {
+            margin: 0px;
+            padding: 0px;
+            position: fixed;
+            overscroll-behavior: contain;
+        }
+        
+        #turn {
+            width: 100%;
+            height: 100%;
+            position: fixed;
+            top: 0px;
+            left: 0px;
+            background-color: white;
+            background-repeat: no-repeat;
+            background-position: center center;
+            display: none;
+            z-index: 2;
+        }
+        
+        .center-block {
+            margin: auto;
+            display: block;
+            position: absolute;
+            z-index: 1;
+            left: 30%;
+            top: 30%;
+            width: 40%;
+            height: 20px;
+            /* background-color: green; */
+        }
+        
+        input[type=text] {
+            width: 100%;
+            padding: 6px 6px;
+            margin: 8px 0;
+            box-sizing: border-box;
+            border: none;
+            font-size: 18px;
+            border-bottom: 2px solid rgb(158, 158, 158);
+        }
+    </style>
+</head>
+
+<body>
+    <script src="./basic/three.min.js"></script>
+    <script src="./basic/three-ui.min.js"></script>
+    <script src="./basic/asset-loader.min.js"></script>
+    <script src="./js/Basic.js"></script>
+    <script src="./js/Player.js"></script>
+    <script src="./js/playble.js"></script>
+
+    <script defer src="./firebase/7.13.1/firebase-app.js"></script>
+    <script defer src="./firebase/7.13.1/firebase-database.js"></script>
+    <script defer src="./firebase/init-firebase.js"></script>
+
+    <script type="text/javascript">
+        window.onload = function() {
+            initstart();
+        };
+    </script>
+
+
+    <!-- <div class="center-block">
+        <input type="text" id="fname" name="fname" placeholder="Username">
+    </div>-->
+</body>
+
+</html>

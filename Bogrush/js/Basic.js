@@ -8,6 +8,7 @@ const GAMENAME = 6;
 const GAMEPAUSE = 7;
 const GAMELEADER = 8;
 const GAMEWIN = 9;
+const GAMEINVITE = 10;
 var sx = 0,
     sy = 0,
     sz = 0,
@@ -31,7 +32,7 @@ function createColor() {
     return new THREE.Color('rgb(' + r + ',' + g + ',' + b + ')');
 }
 
-function loadUI(assetpath, x, y, clickval) {
+function loadUI(assetpath, x, y, s) {
     var sprite = gameUI.createSprite(assetpath);
     sprite.alpha = 1;
     sprite.x = x;
@@ -42,6 +43,10 @@ function loadUI(assetpath, x, y, clickval) {
     sprite.anchor.y = ThreeUI.anchors.center; // Default
     sprite.visible = false;
     sprite.alpha = 1;
+    if (s > 0) {
+        sprite.width = sprite.width * s;
+        sprite.height = sprite.height * s;
+    }
     return sprite;
 }
 
@@ -55,7 +60,7 @@ function loadUIS(assetpath, x, y, s) {
     sprite.width = sprite.width * s;
     sprite.height = sprite.height * s;
     sprite.anchor.x = ThreeUI.anchors.right; // Default
-    sprite.anchor.y = ThreeUI.anchors.top; // Default
+    sprite.anchor.y = ThreeUI.anchors.bottom; // Default
     sprite.visible = false;
     sprite.alpha = 1;
     return sprite;
