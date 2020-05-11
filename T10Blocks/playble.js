@@ -13,8 +13,9 @@ var mTex_Home, mTex_Restrt, mTex_Cup, mTex_hand, mTex_Swip = null,
     mTex_popup, mTex_star = Array();
 var mTex_PlayNew, mTex_RestartNew, mTex_HomeNew, mTex_Settings, mTex_Soundoff, mTex_Soundon, mTex_Leader, mTex_Title, mTex_Logo, mTex_Top;
 var mPlan_Block, mPlan_Base, mPlan_Background;
+var mPlan_install = null;
 var mTex_DWN;
-
+var mp3_click, mp3_line, mp3_win, mp3_brick, mp3_star, audioLoader, listener;
 var mBlocks = [];
 var ratio = 1;
 var selblack = -1;
@@ -29,7 +30,7 @@ var obj_cube, obj_cube2;
 var obj_back = Array();
 var obj_frant = Array();
 var tex_back, tex_frant;
-var level = 0;
+var gameLevel = 0;
 var levelWIN = 0;
 const MIN = .5,
     MAX = 1,
@@ -38,6 +39,8 @@ const MIN = .5,
 const RAD = 1;
 const blockScore = [5, 1, 5, 4, 4, 3, 9, 2, 3, 2, 4, 4, 3, 4];
 const isAndroid = false;
+const BASEURL = './';
+var raycaster = new THREE.Raycaster();
 
 function Block(type, ids, isActive, x, y) {
     this.type = type;
@@ -73,18 +76,39 @@ function initstart() {
 
     function onError() {}
 
-    var textureLoader = new THREE.TextureLoader(manager);
-    tex_back = textureLoader.load('./assets/cube.png');
-    tex_frant = textureLoader.load('./assets/cube1.png');
+    meshLoading = new THREE.Mesh(new THREE.BoxBufferGeometry(10, 10, 10), new THREE.MeshNormalMaterial());
+    meshLoading.position.set(0, 0, -50);
+    scene.add(meshLoading);
 
-    var texback = new THREE.TextureLoader().load("assets/base.png");
+    var textureLoader = new THREE.TextureLoader(manager);
+    tex_back = textureLoader.load(BASEURL + '/assets/cube.png');
+    tex_frant = textureLoader.load(BASEURL + '/assets/cube1.png');
+    // tex_Ads = textureLoader.load('https://hututusoftwares.com/Link/ads_sqr.png');
+
+    // textureLoader.load('https://hututusoftwares.com/Link/ads_sqr.png',
+    //     function(texture) {
+    //         var material = new THREE.MeshBasicMaterial({ map: texture });
+    //         mPlan_install = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material);
+    //         mPlan_install.visible = true;
+    //         mPlan_install.position.set(0, -9, -40);
+    //         scene.add(mPlan_install);
+    //     },
+    //     undefined,
+    //     function(err) {
+    //         console.error('An error happened.');
+    //     }
+    // );
+
+
+
+    var texback = new THREE.TextureLoader().load(BASEURL + 'assets/base.png');
     mPlan_Base = new THREE.Mesh(new THREE.PlaneGeometry(22, 11), new THREE.MeshBasicMaterial({ map: texback, transparent: true }));
     mPlan_Base.visible = true;
     scene.add(mPlan_Base);
     mPlan_Base.position.set(0, -13, -60);
 
 
-    var texture = new THREE.TextureLoader().load("assets/tile.jpg");
+    var texture = new THREE.TextureLoader().load(BASEURL + 'assets/tile.jpg');
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
     texture.repeat.set(10, 10);
@@ -94,7 +118,7 @@ function initstart() {
     mPlan_Block.visible = false;
 
 
-    var texbck = new THREE.TextureLoader().load("assets/back.jpg");
+    var texbck = new THREE.TextureLoader().load(BASEURL + 'assets/back.jpg');
 
     mPlan_Background = new THREE.Mesh(new THREE.PlaneGeometry(39, 52), new THREE.MeshBasicMaterial({ map: texbck }));
     scene.add(mPlan_Background);
@@ -104,8 +128,45 @@ function initstart() {
 
 
     var loader = new THREE.OBJLoader(manager);
-    loader.load('assets/onea.obj', function(obj) { obj_cube = obj; }, onProgress, onError);
-    loader.load('assets/cube.obj', function(obj) { obj_cube2 = obj; }, onProgress, onError);
+    loader.load(BASEURL + 'assets/onea.obj', function(obj) { obj_cube = obj; }, onProgress, onError);
+    loader.load(BASEURL + 'assets/cube.obj', function(obj) { obj_cube2 = obj; }, onProgress, onError);
+
+
+
+    mp3_click, mp3_line, mp3_win, mp3_brick, mp3_star, audioLoader, listener;
+
+
+
+    listener = new THREE.AudioListener();
+    audioLoader = new THREE.AudioLoader();
+    camera.add(listener);
+
+    mp3_click = new THREE.Audio(listener);
+    mp3_line = new THREE.Audio(listener);
+    mp3_win = new THREE.Audio(listener);
+    mp3_brick = new THREE.Audio(listener);
+    mp3_star = new THREE.Audio(listener);
+
+    audioLoader.load(BASEURL + '/assets/sound/click.mp3', function(buffer) {
+        mp3_click.setBuffer(buffer);
+        mp3_click.setVolume(1.0);
+    });
+    audioLoader.load(BASEURL + '/assets/sound/lineComplete.mp3', function(buffer) {
+        mp3_line.setBuffer(buffer);
+        mp3_line.setVolume(1.0);
+    });
+    audioLoader.load(BASEURL + '/assets/sound/level_complete.mp3', function(buffer) {
+        mp3_win.setBuffer(buffer);
+        mp3_win.setVolume(1.0);
+    });
+    audioLoader.load(BASEURL + '/assets/sound/soft_brick.mp3', function(buffer) {
+        mp3_brick.setBuffer(buffer);
+        mp3_brick.setVolume(1.0);
+    });
+    audioLoader.load(BASEURL + '/assets/sound/star.mp3', function(buffer) {
+        mp3_star.setBuffer(buffer);
+        mp3_star.setVolume(1.0);
+    });
 
     AssetLoader.add.webFont('PressStart2P', 'font.css');
     AssetLoader.add.image64('CUP_64', CUP_64);
@@ -118,7 +179,7 @@ function initstart() {
 
     AssetLoader.add.image(BASEURL + 'assets/Play.png');
     AssetLoader.add.image(BASEURL + 'assets/Restart.png');
-    AssetLoader.add.image(BASEURL + 'assets/Settings.png');
+    AssetLoader.add.image(BASEURL + 'assets/Like.png');
     AssetLoader.add.image(BASEURL + 'assets/Sound-off.png');
     AssetLoader.add.image(BASEURL + 'assets/Sound-on.png');
     AssetLoader.add.image(BASEURL + 'assets/Stage.png');
@@ -140,7 +201,7 @@ function initstart() {
         mTex_PlayNew = loadUI(BASEURL + 'assets/Play.png', 0, 0, 0);
         mTex_PlayNew = loadUI(BASEURL + 'assets/Play.png', 0, 0, 0);
         mTex_RestartNew = loadUI(BASEURL + 'assets/Restart.png', 0, 0, 0);
-        mTex_Settings = loadUI(BASEURL + 'assets/Settings.png', 0, 0, 0);
+        mTex_Settings = loadUI(BASEURL + 'assets/Like.png', 0, 0, 0);
         mTex_Soundoff = loadUI(BASEURL + 'assets/Sound-off.png', 0, 0, 0);
         mTex_Soundon = loadUI(BASEURL + 'assets/Sound-on.png', 0, 0, 0);
         mTex_Leader = loadUI(BASEURL + 'assets/Stage.png', 0, 0, 0);
@@ -189,6 +250,7 @@ function initstart() {
         mTex_DWN = loadUI('DWN_64', 0, 0, 1);
 
         Counter = 0;
+        getStore();
         setScreen(GAMELOGO);
     });
     if (isMobile.any()) {
@@ -247,9 +309,12 @@ function Handle_Common(clickval) {
     switch (clickval) {
         case 1: //Home
             setScreen(GAMEMENU);
+            playSound("click");
             break;
         case 2: //Restart
             setScreen(GAMEPLAY);
+            playSound("click");
+            showAds();
             break;
     }
 }
@@ -258,6 +323,8 @@ function Handle_Common(clickval) {
 function Draw() {
     requestAnimationFrame(Draw);
     if (mTex_Empty.length == 0 || mTex_Swip == null) {
+        meshLoading.rotation.x += .1;
+        meshLoading.rotation.y += .1;
         return;
     }
     renderer.render(scene, camera);
@@ -328,12 +395,14 @@ function touchEvent(e, type) {
 
     switch (GameScreen) {
         case GAMEMENU:
+            raycaster.setFromCamera(mouse, camera);
             Handle_Menu(type);
             break;
         case GAMEPLAY:
             Handle_Gameplay(type);
             break;
         case GAMEWIN:
+            raycaster.setFromCamera(mouse, camera);
             Handle_WIN(type);
             break;
     }
@@ -412,6 +481,11 @@ function Handle_WIN(type) {
     if (ThreeUI.isInBoundingBox(coords.x, coords.y, bounds.x, bounds.y, bounds.width, bounds.height)) {
         mSel = 3;
     }
+    if (mPlan_install != null) {
+        if (raycaster.intersectObject(mPlan_install).length > 0) {
+            mSel = 4;
+        }
+    }
     if (type == 2) {
         switch (mSel) {
             case 1:
@@ -422,6 +496,12 @@ function Handle_WIN(type) {
             case 3:
                 setScreen(GAMEMENU);
                 break;
+            case 4:
+                DawnloadUs();
+                break;
+        }
+        if (mSel > 0) {
+            playSound("click");
         }
         mSel = 0;
     }
@@ -453,16 +533,28 @@ function Handle_Menu(type) {
     if (ThreeUI.isInBoundingBox(coords.x, coords.y, bounds.x, bounds.y, bounds.width, bounds.height)) {
         mSel = 3;
     }
+    if (mPlan_install != null) {
+        if (raycaster.intersectObject(mPlan_install).length > 0) {
+            mSel = 4;
+        }
+    }
     if (type == 2) {
         switch (mSel) {
             case 1:
                 setScreen(GAMEPLAY);
                 break;
             case 2:
+                Leaderboard();
                 break;
             case 3:
                 isSound = !isSound;
                 break;
+            case 4:
+                DawnloadUs();
+                break;
+        }
+        if (mSel > 0) {
+            playSound("click");
         }
         mSel = 0;
     }
@@ -483,7 +575,7 @@ function gameWIN() {
     DrawAnim(rects[3], 0, 0, 720, 720);
     DrawAnim(mTex_DWN, 0, 0, 180, 64);
     NewGame = true;
-    level++;
+    gameLevel = parseInt(gameLevel) + 1;
     linecount = 0;
     setScreen(GAMEWIN);
 
@@ -491,14 +583,16 @@ function gameWIN() {
 
 function setScreen(scr) {
     GameScreen = scr;
-
+    if (mPlan_install != null) {
+        mPlan_install.visible = false;
+    }
     mTex_fonts.forEach(element => { element.visible = false; });
     mTex_Empty.forEach(element => { element.visible = false; });
     mTex_Emozy.forEach(element => { element.visible = false; });
     mTex_star.forEach(element => { element.visible = false; });
     mTex_Home.visible = mTex_Restrt.visible = mTex_Cup.visible = mTex_hand.visible = mPlan_Base.visible = mTex_popup.visible = mTex_HomeNew.visible = mTex_Swip.visible = false;
     mTex_PlayNew.visible = mTex_RestartNew.visible = mTex_Settings.visible = mTex_Soundoff.visible = mTex_Soundon.visible = mTex_Leader.visible = mTex_Title.visible = mTex_Logo.visible = false;
-    rects[3].visible = mPlan_Block.visible = mTex_DWN.visible = mTex_Top.visible = false;
+    rects[3].visible = mPlan_Block.visible = mTex_DWN.visible = mTex_Top.visible = meshLoading.visible = false;
     switch (GameScreen) {
         case GAMELOGO:
             mTex_Logo.visible = true;
@@ -507,8 +601,13 @@ function setScreen(scr) {
         case GAMEMENU:
             mPlan_Background.visible = true;
             DrawTexture(mTex_Title, 0, -200);
+            if (mPlan_install != null) {
+                mPlan_install.visible = true;
+            }
             break;
         case GAMEPLAY:
+            score = 0;
+            linecount = 0;
             mPlan_Block.visible = true;
             mPlan_Block.position.set(0, 3.8, -60);
             mPlan_Block.scale.set(1.38, 1.38, 1.38);
@@ -524,19 +623,24 @@ function setScreen(scr) {
             DrawTextureAX(mTex_Restrt, -130, 30, 1, ThreeUI.anchors.center, ThreeUI.anchors.top);
             DrawTexture(mTex_Cup, -20, -260);
             DrawLblAling(mTex_fonts[0], "" + score, 0, -255, FCOLOR2, 12, "left");
-            // DrawLbl(mTex_fonts[1], "0", 50, -250, FCOLOR, 26);
+            DrawLblAling(mTex_fonts[1], "LEVEL : " + (parseInt(gameLevel) + 1), 0, -300, FCOLOR2, 8, "center");
+            console.log("setScreen [totalScore = " + totalScore + "] ~~GAMEPLAY~~ [gameLevel = " + gameLevel + "] ~~ [linecount = " + linecount + "]");
             NewGame = false;
             mTex_Top.visible = true;
             break;
         case GAMEWIN:
+            showAds();
+            setStore();
             DrawTexture(mTex_popup, 0, -60);
             DrawLbl(mTex_fonts[0], "GAMEWIN", 0, -180, FCOLOR, 18);
-            DrawLbl(mTex_fonts[1], "LEVEL : " + level, 0, -120, FCOLOR, 12);
+            DrawLbl(mTex_fonts[1], "LEVEL : " + (gameLevel), 0, -120, FCOLOR, 12);
             DrawLbl(mTex_fonts[2], "SCORE : " + score, 0, -0, FCOLOR, 14);
             mTex_star.forEach(element => { element.start = 0; });
             mTex_star[0].start = 256;
 
-
+            if (mPlan_install != null) {
+                mPlan_install.visible = true;
+            }
             break;
 
     }
@@ -550,16 +654,16 @@ function getStore() {
     try {
         if (isAndroid == true) {
             totalScore = app.getInt("score" + sid, 0);
-            level = app.getInt("lvl" + sid, 1);
+            gameLevel = app.getInt("lvl" + sid, 1);
             isSound = app.getInt("isSound" + sid, 0);
         } else {
             if (typeof(Storage) !== "undefined") {
-                if (level > 0) {
+                gameLevel = localStorage.getItem("lvl" + sid);;
+                if (gameLevel > 0) {
                     totalScore = localStorage.getItem("score" + sid);
-                    level = localStorage.getItem("lvl" + sid);;
                     isSound = localStorage.getItem("isSound" + sid);
                 } else {
-                    level = 0;
+                    gameLevel = 0;
                     totalScore = 0;
                     isSound = 0;
                 }
@@ -568,27 +672,28 @@ function getStore() {
     } catch (err) {
         console.log("~~~~~~~getStore JS~~~~~~" + err);
     }
-    console.log(mPly.name + "  getStore  " + mPly.hroll + " ~~~~ " + mPly.bronze + " ~~ " + mPly.silver + " ~~ " + mPly.gold + " ~~ " + mPly.platinum);
+    console.log("getStore [totalScore = " + totalScore + "] ~~~~ [gameLevel = " + gameLevel + "] ~~ [isSound = " + isSound + "]");
 }
 
 function setStore() {
     try {
         if (isAndroid == true) {
             app.setInt("score" + sid, totalScore);
-            app.setInt("lvl" + sid, level);
+            app.setInt("lvl" + sid, parseInt(gameLevel));
             app.setInt("isSound" + sid, isSound);
         } else {
             localStorage.setItem("score" + sid, totalScore);
-            localStorage.setItem("lvl" + sid, level);
+            localStorage.setItem("lvl" + sid, parseInt(gameLevel));
             localStorage.setItem("isSound" + sid, isSound);
         }
     } catch (err) {
         console.log("~~~~~~~setStore JS~~~~~~" + err);
     }
-    console.log(mPly.name + "    " + mPly.hroll + " ~~~~ " + mPly.bronze + " ~~ " + mPly.silver + " ~~ " + mPly.gold + " ~~ " + mPly.platinum);
+    console.log("setStore [totalScore = " + totalScore + "] ~~~~ [gameLevel = " + gameLevel + "] ~~ [isSound = " + isSound + "]");
 }
 
 function showAds() {
+    console.log("~~~~~~~showAds JS~~~~~~");
     try {
         if (isAndroid == true)
             app.showAds();
@@ -636,4 +741,46 @@ function Show(visible) {
             }
         }
     } catch (err) {}
+}
+
+function DawnloadUs() {
+    try {
+        if (isAndroid == true)
+            app.Download();
+        else {
+            console.log("Download");
+        }
+    } catch (err) {}
+}
+
+function Leaderboard() {
+    try {
+        if (isAndroid == true)
+            app.Leaderboard();
+        else {
+            console.log("Leaderboard");
+        }
+    } catch (err) {}
+}
+
+function playSound(type) {
+    if (isSound) {
+        switch (type) {
+            case "click":
+                mp3_click.play();;
+                break;
+            case "line":
+                mp3_line.play();;
+                break;
+            case "win":
+                mp3_win.play();;
+                break;
+            case "brick":
+                mp3_brick.play();;
+                break;
+            case "star":
+                mp3_star.play();;
+                break;
+        }
+    }
 }

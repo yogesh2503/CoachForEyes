@@ -568,13 +568,10 @@ function Draw() {
     Counter++;
     if (isResize > 0) {
         isResize--;
-
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
-
         gameUI.resize();
-
         //iosSend("log",window.innerWidth" : "+ window.innerHeight)
     }
 }

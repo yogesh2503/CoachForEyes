@@ -24,6 +24,7 @@ function Handle_Gameplay(type) {
     if (type == 2 && NewGame == false) {
         if (selblack >= 0) {
             if (testBloack(mBlocks[selblack])) {
+                playSound("brick");
                 score += blockScore[mBlocks[selblack].type];
                 mBlocks[selblack].isActive = false;
                 var isstate = Array(10);
@@ -60,9 +61,13 @@ function Handle_Gameplay(type) {
                 }
                 score += (localscore * linecount);
                 DrawLblAling(mTex_fonts[0], "" + score, 0, -255, FCOLOR2, 12, "left");
-                if (linecount >= MAXLIN + level && levelWIN == 0) {
+                console.log(linecount + "  " + (MAXLIN + parseInt(gameLevel)) + " " + levelWIN)
+                if (linecount >= MAXLIN + parseInt(gameLevel) && levelWIN == 0) {
                     // gameWIN();
                     levelWIN = 1;
+                }
+                if (localscore > 0) {
+                    playSound("line");
                 }
             } else {
                 mBlocks[selblack].x = -6 + selblack * 6;
