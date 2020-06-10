@@ -13,6 +13,7 @@ var bestScore = 0,
     isSound = 1,
     mScore = 0;
 var mp3_bounce, mp3_Over, mp3_click, audioLoader, listener;
+var mp3_gameplay; // 13 May 2020
 var tex_frant, mTex_fonts = Array();
 var mTex_blast = Array();
 var obj_cube = null;
@@ -21,6 +22,11 @@ var obj_World = null;
 var mPlan_Splash;
 var obj_Ball, mPlan_Shadow;
 var tex_Splash = Array();
+// 13 May 2020 Start
+var mTex_hempty = Array(),
+    mTex_heart = Array();
+// 13 May 2020 End
+
 const BASEURL = '';
 
 function initstart() {
@@ -88,7 +94,7 @@ function initstart() {
     mp3_Over = new THREE.Audio(listener);
     mp3_bounce = new THREE.Audio(listener);
     mp3_click = new THREE.Audio(listener);
-
+    mp3_gameplay = new THREE.Audio(listener); // 13 May 2020
 
     audioLoader.load('assets/sound/gameover.mp3', function(buffer) {
         mp3_Over.setBuffer(buffer);
@@ -104,6 +110,13 @@ function initstart() {
     });
 
 
+    // 13 May 2020 Start
+    audioLoader.load('assets/sound/gameplay.mp3', function(buffer) {
+        mp3_gameplay.setBuffer(buffer);
+        mp3_gameplay.setVolume(1.0);
+        mp3_gameplay.setLoop(true);
+    });
+    // 13 May 2020 End
 
     AssetLoader.add.webFont('PressStart2P', 'font.css');
     AssetLoader.add.image(BASEURL + 'assets/logo.png');
@@ -121,6 +134,8 @@ function initstart() {
     AssetLoader.add.image(BASEURL + 'assets/title.png');
     AssetLoader.add.image(BASEURL + 'assets/left_arrow.png');
     AssetLoader.add.image(BASEURL + 'assets/right_arrow.png');
+    AssetLoader.add.image(BASEURL + 'assets/heart.png'); // 13 May 2020
+    AssetLoader.add.image(BASEURL + 'assets/heartempty.png'); // 13 May 2020
     for (var i = 0; i < 17; i++) {
         AssetLoader.add.image(BASEURL + 'assets/blast/' + i + '.png');
     }
@@ -142,6 +157,13 @@ function initstart() {
         mTex_Play = loadUI(BASEURL + 'assets/play.png', 0, 0, 0);
         mTex_left = loadUI(BASEURL + 'assets/left_arrow.png', 0, 0, 0);
         mTex_right = loadUI(BASEURL + 'assets/right_arrow.png', 0, 0, 0);
+        // 13 May 2020 Start
+        for (let i = 0; i < 3; i++) {
+            mTex_hempty.push(loadUI(BASEURL + 'assets/heartempty.png', 0, 0, 0));
+            mTex_heart.push(loadUI(BASEURL + 'assets/heart.png', 0, 0, 0));
+        }
+        // 13 May 2020 End
+
         for (var i = 0; i < 5; i++) {
             mTex_fonts.push(createTexts('100', 8, FCOLOR, ThreeUI.anchors.center, ThreeUI.anchors.center, 'center', 'PressStart2P'));
         }
@@ -375,6 +397,8 @@ function onWindowResize() {
 
 function setScreen(scr) {
     GameScreen = scr;
+    mTex_hempty.forEach(element => { element.visible = false; }); // 13 May 2020
+    mTex_heart.forEach(element => { element.visible = false; }); // 13 May 2020
     mTex_fonts.forEach(element => { element.visible = false; });
     mTex_blast.forEach(element => { element.visible = false; });
     mTex_Gameover.visible = mTex_Help.visible = mTex_Home.visible = mTex_h2Play.visible = mTex_MusicOff.visible = mTex_logo.visible = false;
@@ -385,6 +409,7 @@ function setScreen(scr) {
     mPlan_Shadow.visible = false;
     if (obj_World != null)
         obj_World.visible = false;
+    mp3_gameplay.pause(); // 13 May 2020
     switch (GameScreen) {
         case GAMELOGO:
             mTex_logo.visible = true;
@@ -403,13 +428,19 @@ function setScreen(scr) {
             showAds();
             break;
         case GAMEPLAY:
+            playSound("gameplay"); // 13 May 2020
             gamereset();
             DrawTextureAX(mTex_Score, 70, 30, ThreeUI.anchors.left, ThreeUI.anchors.top);
             DrawLblAling(mTex_fonts[0], "" + mScore, 96, 35, FCOLOR2, 10, "center", ThreeUI.anchors.left, ThreeUI.anchors.top);
             DrawTextureAX(mTex_left, 40, 140, ThreeUI.anchors.left, ThreeUI.anchors.bottom);
             DrawTextureAX(mTex_right, 40, 140, ThreeUI.anchors.right, ThreeUI.anchors.bottom);
             mTex_right.alpha = mTex_left.alpha = .3;
-
+            // 13 May 2020 Start
+            for (var i = 0; i < mTex_hempty.length; i++) {
+                DrawTextureAX(mTex_hempty[i], 16 + i * 32, 20, ThreeUI.anchors.right, ThreeUI.anchors.top);
+                DrawTextureAX(mTex_heart[i], 16 + i * 32, 20, ThreeUI.anchors.right, ThreeUI.anchors.top);
+            }
+            // 13 May 2020 End
             break;
     }
 
@@ -484,6 +515,11 @@ function playSound(type) {
             case "bounce":
                 mp3_bounce.play();;
                 break;
+                // 13 May 2020 Start
+            case "gameplay":
+                mp3_gameplay.play();
+                break;
+                // 13 May 2020 End
         }
     }
 }

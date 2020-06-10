@@ -20,7 +20,9 @@ var mTex_Bar, mTex_bar1, mTex_Bar2, mTex_setting, mTex_back;
 var colors;
 var mTex_sound_off, mTex_sound_on, mTex_SetBck
 var mp3_button, mp3_connect, mp3_error, mp3_win, mp3_start, audioLoader, listener;
-const isAndroid = true;
+
+var mTex_Hand, mTex_Swipe; //28 may
+const isAndroid = false;
 
 function initstart() {
     camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 300);
@@ -53,7 +55,7 @@ function initstart() {
     tex_cube2 = textureLoader.load(BASEURL + 'assets/cube2.png');
     tex_background = textureLoader.load(BASEURL + 'assets/background.jpg');
     tex_Winner = textureLoader.load(BASEURL + 'assets/winner.jpg');
-
+    tex_hand = textureLoader.load(BASEURL + 'assets/hand.png');
     var meterial = new THREE.MeshStandardMaterial({ map: tex_background });
     mPlan_background = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), meterial);
     mPlan_background.position.z = -12;
@@ -98,8 +100,8 @@ function initstart() {
         element.isSet = false;
     }
 
-
-
+    mTex_Hand = new THREE.Mesh(new THREE.PlaneGeometry(3, 3), new THREE.MeshBasicMaterial({ map: tex_hand, transparent: true }));
+    scene.add(mTex_Hand);
 
 
 
@@ -157,6 +159,8 @@ function initstart() {
     AssetLoader.add.image(BASEURL + 'assets/sound_on.png');
     AssetLoader.add.image(BASEURL + 'assets/back.png');
 
+    // AssetLoader.add.image(BASEURL + 'assets/hand.png'); //28 may
+    AssetLoader.add.image(BASEURL + 'assets/swipe.png'); //28 may
 
     AssetLoader.progressListener = function(progress) {};
     AssetLoader.load(function() {
@@ -172,7 +176,8 @@ function initstart() {
         mTex_pl2sel = loadUI(BASEURL + 'assets/pl2sel.png', 0, -300, 0);
         mTex_play = loadUI(BASEURL + 'assets/play.png', 0, -300, 0);
         mTex_setting = loadUI(BASEURL + 'assets/setting0.png', 0, 210, 0);
-
+        // mTex_Hand = loadUI(BASEURL + 'assets/hand.png', 0, 210, 0); //28 may
+        mTex_Swipe = loadUI(BASEURL + 'assets/swipe.png', 0, 210, 0); //28 may
 
         mTex_sound_off = loadUI(BASEURL + 'assets/sound_off.png', 0, 0, 0);
         mTex_sound_on = loadUI(BASEURL + 'assets/sound_on.png', 0, 0, 0);
@@ -602,6 +607,7 @@ function setScreen(scr) {
     mTex_pl1sel.visible = mTex_pl2del.visible = mTex_pl2sel.visible = mTex_play.visible = false;
     mTex_setting.visible = mTex_Bar.visible = mPlan_Winner.visible = mTex_back.visible = false;
     mTex_sound_off.visible = mTex_sound_on.visible = mTex_SetBck.visible = false;
+    mTex_Hand.visible = mTex_Swipe.visible = false; //28 may
     if (GameScreen == GAMEPLAY || GameScreen == GAMEOVER)
         showBanner(1);
     else
@@ -642,8 +648,8 @@ function setScreen(scr) {
             DrawTextureAX(mTex_pl1sel, -110, 38, ThreeUI.anchors.center, ThreeUI.anchors.top);
             DrawTextureAX(mTex_pl2del, 110, 38, ThreeUI.anchors.center, ThreeUI.anchors.top);
             DrawTextureAX(mTex_pl2sel, 110, 38, ThreeUI.anchors.center, ThreeUI.anchors.top);
-            DrawTransScal(mTex_back, 30, 260, 64, 64, 1, .81);
-            mTex_back.anchor.x = ThreeUI.anchors.right; // Default
+            DrawTransScal(mTex_back, 0, 260, 64, 64, 1, .81);
+            // mTex_back.anchor.x = ThreeUI.anchors.right; // Default
             // mTex_pl1del, mTex_pl1sel, mTex_pl2del, mTex_pl2sel
             gamereset();
             break;
@@ -705,7 +711,7 @@ function showAds() {
         if (isAndroid == true) {
             app.showAds();
         } else {
-            console.log("~~~~~~~showAds ~JS~~~~~~");
+            iosSend("interstitial", "interstitial");
         }
     } catch (err) {
         console.log("~~~~~~~showAds JS~~~~~~" + err);
@@ -717,7 +723,7 @@ function showBanner(visible) {
         if (isAndroid == true) {
             app.ShowBanner(visible);
         } else {
-            console.log("~~~~~~~showBanner~~~~~~  " + visible);
+            iosSend("banner", "" + visible);
         }
     } catch (err) {
         console.log("~~~~~~~showBanner Error~~~~~~ " + err);
@@ -729,7 +735,7 @@ function Exit() {
         if (isAndroid == true) {
             app.Exit();
         } else {
-            console.log("~~~~~~~Exit~~~~~~  ");
+            iosSend("Exit", "Exit");
         }
     } catch (err) {
         console.log("~~~~~~~Exit Error~~~~~~ " + err);
@@ -767,4 +773,20 @@ function playSound(type) {
 function iosSend(usr, token) {
     var messagehidden = { username: usr, secretToken: token };
     window.webkit.messageHandlers.userLogin.postMessage(messagehidden);
+}
+
+function onKeyDown() {
+    switch (GameScreen) {
+        case GAMESELCIR:
+            setScreen(GAMESELECT);
+            break;
+        case GAMEPLAY:
+        case GAMEOVER:
+            setScreen(GAMESELCIR);
+            break;
+        default:
+            setScreen(GAMEMENU);
+            break;
+    }
+    playSound("click");
 }

@@ -18,10 +18,12 @@ function gamereset() {
     // mTex_pointer.cir = 30;
     obj_Balls.sort(compRan);
     colors.push(createColor(0));
+    hsx = -1000;
     for (let i = 0; i < obj_Balls.length; i++) {
         obj_Balls[i].isUsed = false;
         obj_Balls[i].visible = mTex_pointer.cir > i;
         obj_Balls[i].children[1].material.color = colors[i];
+
     }
     for (var i = 0; i < obj_Cube.length; i++) {
         obj_Cube[i].sx = 0;
@@ -34,6 +36,7 @@ function gamereset() {
     pSel = 0;
     justCheck = 0;
     overCounter = 0;
+    findNearest();
 }
 
 function DrawGameplay() {
@@ -45,6 +48,9 @@ function DrawGameplay() {
         if (overCounter > 50) {
             setScreen(GAMEOVER);
         }
+    }
+    if (gameNew == true) {
+        handAinm();
     }
 }
 
@@ -92,8 +98,8 @@ function Handle_Gameplay(e, type) {
     }
 
     if (isClick) {
-        // if (type == 1)
-        //     mouse.y = mouse.y + (mouse.y - sss) * .6;
+        if (type == 1 && isAndroid == false)
+            mouse.y = mouse.y + (mouse.y - sss) * .6;
         GetLine(start.x, start.y, start.i, mouse.x * ratio * MULTI, mouse.y * MULTI, lineno);
     }
     if (type == 2 && isClick) {
@@ -105,6 +111,7 @@ function Handle_Gameplay(e, type) {
             obj_Balls[start.i].isUsed = true;
             obj_Balls[cmove.i].isUsed = true;
             pSel = pSel == 0 ? 1 : 0;
+            mTex_Hand.visible = mTex_Swipe.visible = gameNew = false;
             playSound('connect');
             if (pSel == 1 && isTwoPlayer == false) {
                 computerChal();
@@ -238,5 +245,59 @@ function computerChal() {
         }
     }
 
+
+}
+
+var hsx, hsy, hex, hey, hang;
+var ssx = 1,
+    svx = .99;
+var gameNew = true;
+
+function handAinm() {
+    mTex_Hand.position.x += (Math.sin(hang) * .1);
+    mTex_Hand.position.y -= (Math.cos(hang) * .1);
+    if (mTex_Hand.position.y < hey) {
+        mTex_Hand.position.set(hsx, hsy, 1);
+    }
+    mTex_Hand.visible = true;
+    DrawTransScal(mTex_Swipe, 0, 120, 256, 128, ssx, 1);
+    if (ssx > 1.1) {
+        svx = 0.99;
+    }
+    if (ssx < 0.9) {
+        svx = 1.01;
+    }
+    ssx *= svx;
+
+}
+
+function findNearest() {
+    hsy = -16;
+    hsx = 10;
+    var dis = 20;
+    for (let i = 0; i < obj_Balls.length && i < mTex_pointer.cir; i++) {
+        if (obj_Balls[i].position.y > hsy) {
+            hsy = obj_Balls[i].position.y;
+        }
+    }
+    for (let i = 0; i < obj_Balls.length && i < mTex_pointer.cir; i++) {
+        if (obj_Balls[i].position.y == hsy && obj_Balls[i].position.x < hsx) {
+            hsx = obj_Balls[i].position.x;
+        }
+    }
+    for (let i = 0; i < obj_Balls.length && i < mTex_pointer.cir; i++) {
+        if (obj_Balls[i].position.y < hsy && Math.abs(obj_Balls[i].position.y - hsy) < dis) {
+            dis = Math.abs(obj_Balls[i].position.y - hsy);
+            hex = obj_Balls[i].position.x;
+            hey = obj_Balls[i].position.y;
+
+        }
+    }
+    hsx += 1.3;
+    hsy -= 1.3;
+    hex += 1.3;
+    hey -= 1.3;
+    hang = getAngle(hsx, hsy, hex, hey) * (Math.PI / 180);
+    mTex_Hand.position.set(hsx, hsy, 1);
 
 }

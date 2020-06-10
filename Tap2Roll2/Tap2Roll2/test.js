@@ -1,6 +1,7 @@
 const ROT_SPD = .2;
 const MAX_ANG = .25;
 var overCount = 0;
+var lastSpeed = 0; // 13 May 2020
 
 function gamereset() {
     obj_Base[0].position.set(0, 0, 0);
@@ -28,12 +29,12 @@ function gamereset() {
     obj_World.ang = 0;
     obj_World.rotation.set(0, 0, 0);
 
-    obj_Ball.spd = .8;
+    lastSpeed = obj_Ball.spd = .9; // 13 May 2020
     obj_Ball.vy = .1;
     obj_Ball.position.y = -9.0;
     mScore = 0;
     obj_World.visible = true;
-
+    mLife = 3; // 13 May 2020
     obj_Ball.visible = true;
     mPlan_Shadow.visible = true;
     mPlan_Splash.traverse(function(child) {
@@ -47,15 +48,33 @@ function gamereset() {
 
 function drawGameplay() {
     obj_Ball.rotation.x = -Counter * .2;
-    for (var i = 0; i < obj_Base.length && overCount == 0; i++) {
+    // 13 May 2020 Start
+    for (var i = 0; i < obj_Base.length; i++) {
         obj_Base[i].position.z += obj_Ball.spd;
-        if (obj_Base[i].position.z > -obj_Base[i].scale.z && obj_Base[i].position.z < obj_Base[i].scale.z && obj_Ball.position.y <= -8.9) {
-            if ((obj_World.ang + obj_Base[i].angle) != 0) {
+        if (obj_Base[i].position.z > -obj_Base[i].scale.z && obj_Base[i].position.z < obj_Base[i].scale.z && obj_Ball.position.y <= -8.9 && overCount == 0) {
+            if (((obj_World.ang + obj_Base[i].angle) % 8) != 0) {
+
+                console.log(obj_World.ang + " + " + obj_Base[i].angle + " = " + (obj_World.ang + obj_Base[i].angle) + " " + ((obj_World.ang + obj_Base[i].angle) % 8));
+
+                lastSpeed = obj_Ball.spd;
                 obj_Ball.spd = 0;
                 overCount = 1;
+
+                obj_World.dir = -(((obj_World.ang + obj_Base[i].angle) % 8));
+                if (obj_World.dir < 0) //Left
+                {
+                    obj_World.ang += obj_World.dir;
+                    obj_World.rot = -Math.PI * MAX_ANG;
+                }
+                if (obj_World.dir > 0) //ritght
+                {
+                    obj_World.ang += obj_World.dir;
+                    obj_World.rot = Math.PI * MAX_ANG;
+                }
             }
         }
     }
+    // 13 May 2020 End
     for (var i = 0; i < obj_Base.length; i++) {
         if (obj_Base[i].position.z > 50) {
             obj_Base[i].scale.set(3, 1, 7 + Math.random() * 10);
@@ -96,31 +115,56 @@ function drawGameplay() {
             obj_Ball.position.y = -9;
         }
     }
-    if (obj_Ball.spd > .3 && obj_Ball.spd < 1.8 && Counter % 200 == 0) {
-        obj_Ball.spd += .1;
-    }
+    // 13 May 2020 Start
+    // if (obj_Ball.spd > .3 && obj_Ball.spd < 1.8 && Counter % 200 == 0) {
+    //     obj_Ball.spd += .1;
+    // }
     if (overCount > 0) {
         for (var i = 0; i < mTex_blast.length; i++) {
-            mTex_blast[i].visible = (i == Math.floor(overCount / 2));
+            mTex_blast[i].visible = (i == Math.floor(overCount));
         }
         overCount++;
         obj_Ball.visible = false;
         mPlan_Shadow.visible = false;
-        if (overCount > 50) {
-            gameover();
+        if (overCount > 20) {
+            newLife();
+
         }
         if (overCount == 2) {
             playSound("over");
         }
     }
+    if (overCount < 0 && overCount > -105) {
+        overCount++;
+        obj_Ball.visible = (overCount % 4 < 0);
+        console.log(overCount + " obj_Ball.spd = " + (overCount % 4 < 0));
+        if (overCount > -10)
+            obj_Ball.visible = true;
+    }
+    // 13 May 2020 End
 }
-
+// 13 May 2020 Start add function
+function newLife() {
+    mLife--;
+    overCount = -111;
+    obj_Ball.spd = 0;
+    obj_Ball.visible = true;
+    mPlan_Shadow.visible = true;
+    for (var i = 0; i < mTex_hempty.length; i++) {
+        mTex_heart[i].visible = i < mLife;
+    }
+    if (mLife <= 0) {
+        gameover();
+    }
+}
+// 13 May 2020 End
 function setDirections(dir) {
     if (obj_Ball.spd > .3 && obj_World.rot == 0) {
         var isCollide = false;
-        for (var i = 0; i < obj_Base.length && isCollide == false; i++) {
+        for (var i = 0; i < obj_Base.length && isCollide == false && overCount == 0; i++) {
             if (obj_Base[i].position.z > -obj_Base[i].scale.z && obj_Base[i].position.z < obj_Base[i].scale.z) {
-                if ((obj_World.ang + obj_Base[i].angle) != 0) {
+                if (((obj_World.ang + obj_Base[i].angle) % 8) != 0) {
+                    lastSpeed = obj_Ball.spd;
                     obj_Ball.spd = 0;
                     overCount = 1;
                     return;
@@ -142,8 +186,27 @@ function setDirections(dir) {
         obj_Ball.position.y = -8.5;
         obj_Ball.position.vy = 1.6;
         mScore++;
+        // 13 May 2020 Start
+        if (mScore == 30) {
+            obj_Ball.spd = 1.1;
+        }
+        if (mScore == 40) {
+            obj_Ball.spd = 1.4;
+        }
+        if (mScore == 50) {
+            obj_Ball.spd = 1.6;
+        }
+
         DrawLblAling(mTex_fonts[0], "" + mScore, 96, 35, FCOLOR2, 10, "center", ThreeUI.anchors.left, ThreeUI.anchors.top);
+    } else {
+        if (overCount === -111) {
+            obj_Ball.spd = lastSpeed;
+            overCount = -101;
+            overCount = 0;
+        }
+
     }
+    // 13 May 2020 End
 }
 
 function detectCollisionCubes(object1, object2) {

@@ -184,6 +184,7 @@ function dealWithKeyboard(e) {
             setDirections(1);
             break;
         case 38:
+            // setScreen(GAMEMENU);
             sz = sz + vs;
             break;
         case 39:
@@ -225,11 +226,12 @@ function dealWithKeyboard(e) {
             rx = ry = rz = 0;
             break;
         case 32:
+            // if (GameScreen != GAMEPLAY)
             setScreen(GAMEPLAY);
             break;
     }
-    console.log("sx = " + sx + ", sy = " + sy + ", sz =" + sz);
-    console.log(e.keyCode + " rx = " + rx + ", ry = " + ry + ", rz =" + rz);
+    // console.log("sx = " + sx + ", sy = " + sy + ", sz =" + sz);
+    // console.log(e.keyCode + " rx = " + rx + ", ry = " + ry + ", rz =" + rz);
 }
 
 function Handle_Common(clickval) {

@@ -7,7 +7,7 @@ var gameUI;
 var mTex_fonts = Array(3);
 var mTex_Empty = [];
 var mTex_Emozy = [];
-var mTex_Home, mTex_Restrt, mTex_Cup, mTex_play,mTex_hand,mTex_Swip;
+var mTex_Home, mTex_Restrt, mTex_Cup, mTex_play, mTex_hand, mTex_Swip;
 var mTex_DWN;
 var fcolor = "#8bbdd1";
 var mBlocks = [];
@@ -22,7 +22,7 @@ var NewGame = false;
 const MIN = .5,
     MAX = 1,
     MUL = 360,
-    MAXLIN = 1;
+    MAXLIN = 1000;
 const RAD = 12;
 const blockScore = [5, 1, 5, 4, 4, 3, 9, 2, 3];
 
@@ -138,10 +138,10 @@ function initstart() {
         DrawTexture(mTex_play, 0, 320);
 
 
-        mTex_hand=loadUI('HND_64', 0, 0, 0);
+        mTex_hand = loadUI('HND_64', 0, 0, 0);
         mTex_hand.vx = 5;
         //
-        mTex_Swip=loadUI('SWP_64', 0, 0, 0);
+        mTex_Swip = loadUI('SWP_64', 0, 0, 0);
         mTex_Swip.vx = .1;
         mTex_Swip.scl = 32;
 
@@ -166,7 +166,7 @@ function initstart() {
     // }
     // document.addEventListener('keydown', dealWithKeyboard);
     window.addEventListener('resize', onWindowResize, false);
-// gameWIN() ;
+    // gameWIN() ;
     Draw();
 }
 
@@ -205,13 +205,13 @@ function Draw() {
     if (mTex_play.scl < 26)
         mTex_play.vx = 1.01;
 
-    if(isHand){
-      DrawAnim(mTex_Swip, 0, -170, mTex_play.scl * 4, mTex_play.scl);
-      DrawAnim(mTex_hand, 30, mTex_hand.y, 64, 64);
-      if(mTex_hand.y < -100){
-        mTex_hand.y = 180;
-      }
-      mTex_hand.y -=3;
+    if (isHand) {
+        DrawAnim(mTex_Swip, 0, -170, mTex_play.scl * 4, mTex_play.scl);
+        DrawAnim(mTex_hand, 30, mTex_hand.y, 64, 64);
+        if (mTex_hand.y < -100) {
+            mTex_hand.y = 180;
+        }
+        mTex_hand.y -= 3;
     }
     Counter++;
     if (isResize > 0) {
@@ -359,7 +359,7 @@ function setGame() {
 
 function resetGame() {
     for (let i = 0; i < 3; i++) {
-        var id =  random(0, 9);
+        var id = random(0, 9);
         mBlocks[i].type = id;
         mBlocks[i].ids = createBloack(id, -110 + i * 110, 200);
         mBlocks[i].isActive = true;
@@ -689,8 +689,8 @@ function gameWIN() {
     // mTex_fonts[1].visible = false;
     rects[3].alpha = 0.7;
     rects[3].visible = true;
-    DrawAnim(rects[3], 0, 0,720, 720);
-    DrawAnim(mTex_DWN, 0, 0,180, 64);
+    DrawAnim(rects[3], 0, 0, 720, 720);
+    DrawAnim(mTex_DWN, 0, 0, 180, 64);
 
 
     NewGame = true;
@@ -719,292 +719,294 @@ function testBloack(block) {
             return test_c1x3(block);
     }
 }
+
 function test_cL0(block) {
-  var dis = [];
-  var is = [];
+    var dis = [];
+    var is = [];
     for (let i = 10; i < mTex_Empty.length - 10; i++) {
         if (i % 10 != 0 && i % 10 != 9) {
             if (circir(mTex_Empty[i].x, mTex_Empty[i].y, RAD, block.x, block.y, RAD)) {
                 if (mTex_Empty[i - 11].isEmpty && mTex_Empty[i - 10].isEmpty && mTex_Empty[i - 9].isEmpty && mTex_Empty[i - 1].isEmpty && mTex_Empty[i + 9].isEmpty) {
-                  dis.push(Math.sqrt((mTex_Empty[i].x - block.x) * (mTex_Empty[i].x - block.x) + (mTex_Empty[i].y - block.y) * (mTex_Empty[i].y - block.y)));
-                  is.push(i);
+                    dis.push(Math.sqrt((mTex_Empty[i].x - block.x) * (mTex_Empty[i].x - block.x) + (mTex_Empty[i].y - block.y) * (mTex_Empty[i].y - block.y)));
+                    is.push(i);
                 }
             }
         }
     }
-    if(dis.length > 0){
-      let i = geti(dis,is);
-      DrawTextureS(mTex_Emozy[block.ids[0]], mTex_Empty[i - 11].x, mTex_Empty[i - 11].y, MAX, 2);
-      DrawTextureS(mTex_Emozy[block.ids[1]], mTex_Empty[i - 10].x, mTex_Empty[i - 10].y, MAX, 2);
-      DrawTextureS(mTex_Emozy[block.ids[2]], mTex_Empty[i - 9].x, mTex_Empty[i - 9].y, MAX, 2);
-      DrawTextureS(mTex_Emozy[block.ids[3]], mTex_Empty[i - 1].x, mTex_Empty[i - 1].y, MAX, 2);
-      DrawTextureS(mTex_Emozy[block.ids[4]], mTex_Empty[i + 9].x, mTex_Empty[i + 9].y, MAX, 2);
-      mTex_Empty[i - 11].isEmpty = mTex_Empty[i - 10].isEmpty = mTex_Empty[i - 9].isEmpty = mTex_Empty[i - 1].isEmpty = mTex_Empty[i + 9].isEmpty = false;
-      mTex_Empty[i - 11].id = block.ids[0];
-      mTex_Empty[i - 10].id = block.ids[1];
-      mTex_Empty[i - 9].id = block.ids[2];
-      mTex_Empty[i - 1].id = block.ids[3];
-      mTex_Empty[i + 9].id = block.ids[4];
-      return true;
+    if (dis.length > 0) {
+        let i = geti(dis, is);
+        DrawTextureS(mTex_Emozy[block.ids[0]], mTex_Empty[i - 11].x, mTex_Empty[i - 11].y, MAX, 2);
+        DrawTextureS(mTex_Emozy[block.ids[1]], mTex_Empty[i - 10].x, mTex_Empty[i - 10].y, MAX, 2);
+        DrawTextureS(mTex_Emozy[block.ids[2]], mTex_Empty[i - 9].x, mTex_Empty[i - 9].y, MAX, 2);
+        DrawTextureS(mTex_Emozy[block.ids[3]], mTex_Empty[i - 1].x, mTex_Empty[i - 1].y, MAX, 2);
+        DrawTextureS(mTex_Emozy[block.ids[4]], mTex_Empty[i + 9].x, mTex_Empty[i + 9].y, MAX, 2);
+        mTex_Empty[i - 11].isEmpty = mTex_Empty[i - 10].isEmpty = mTex_Empty[i - 9].isEmpty = mTex_Empty[i - 1].isEmpty = mTex_Empty[i + 9].isEmpty = false;
+        mTex_Empty[i - 11].id = block.ids[0];
+        mTex_Empty[i - 10].id = block.ids[1];
+        mTex_Empty[i - 9].id = block.ids[2];
+        mTex_Empty[i - 1].id = block.ids[3];
+        mTex_Empty[i + 9].id = block.ids[4];
+        return true;
     }
     return false;
 }
 
 function test_single(block) {
-  var dis = [];
-  var is = [];
+    var dis = [];
+    var is = [];
     for (let i = 0; i < mTex_Empty.length; i++) {
         if (circir(mTex_Empty[i].x, mTex_Empty[i].y, RAD, block.x, block.y, RAD) && mTex_Empty[i].isEmpty) {
-          dis.push(Math.sqrt((mTex_Empty[i].x - block.x) * (mTex_Empty[i].x - block.x) + (mTex_Empty[i].y - block.y) * (mTex_Empty[i].y - block.y)));
-          is.push(i);
+            dis.push(Math.sqrt((mTex_Empty[i].x - block.x) * (mTex_Empty[i].x - block.x) + (mTex_Empty[i].y - block.y) * (mTex_Empty[i].y - block.y)));
+            is.push(i);
 
         }
     }
-    if(dis.length > 0){
-      let i = geti(dis,is);
-      DrawTextureS(mTex_Emozy[block.ids[0]], mTex_Empty[i].x, mTex_Empty[i].y, MAX, 2);
-      mTex_Empty[i].isEmpty = false;
-      mTex_Empty[i].id = block.ids[0];
-      return true;
+    if (dis.length > 0) {
+        let i = geti(dis, is);
+        DrawTextureS(mTex_Emozy[block.ids[0]], mTex_Empty[i].x, mTex_Empty[i].y, MAX, 2);
+        mTex_Empty[i].isEmpty = false;
+        mTex_Empty[i].id = block.ids[0];
+        return true;
     }
     return false;
 }
 
 function test_cL1(block) {
-  var dis = [];
-  var is = [];
+    var dis = [];
+    var is = [];
     for (let i = 10; i < mTex_Empty.length - 10; i++) {
         if (i % 10 != 0 && i % 10 != 9) {
             if (circir(mTex_Empty[i].x, mTex_Empty[i].y, RAD, block.x, block.y, RAD)) {
                 if (mTex_Empty[i + 11].isEmpty && mTex_Empty[i + 10].isEmpty && mTex_Empty[i + 9].isEmpty && mTex_Empty[i + 1].isEmpty && mTex_Empty[i - 9].isEmpty) {
-                  dis.push(Math.sqrt((mTex_Empty[i].x - block.x) * (mTex_Empty[i].x - block.x) + (mTex_Empty[i].y - block.y) * (mTex_Empty[i].y - block.y)));
-                  is.push(i);
+                    dis.push(Math.sqrt((mTex_Empty[i].x - block.x) * (mTex_Empty[i].x - block.x) + (mTex_Empty[i].y - block.y) * (mTex_Empty[i].y - block.y)));
+                    is.push(i);
 
                 }
             }
         }
     }
-    if(dis.length > 0){
-      let i = geti(dis,is);
-      DrawTextureS(mTex_Emozy[block.ids[0]], mTex_Empty[i + 9].x, mTex_Empty[i + 9].y, MAX, 2);
-      DrawTextureS(mTex_Emozy[block.ids[1]], mTex_Empty[i + 10].x, mTex_Empty[i + 10].y, MAX, 2);
-      DrawTextureS(mTex_Emozy[block.ids[2]], mTex_Empty[i + 11].x, mTex_Empty[i + 11].y, MAX, 2);
-      DrawTextureS(mTex_Emozy[block.ids[3]], mTex_Empty[i + 1].x, mTex_Empty[i + 1].y, MAX, 2);
-      DrawTextureS(mTex_Emozy[block.ids[4]], mTex_Empty[i - 9].x, mTex_Empty[i - 9].y, MAX, 2);
-      mTex_Empty[i + 11].isEmpty = mTex_Empty[i + 10].isEmpty = mTex_Empty[i + 9].isEmpty = mTex_Empty[i + 1].isEmpty = mTex_Empty[i - 9].isEmpty = false;
+    if (dis.length > 0) {
+        let i = geti(dis, is);
+        DrawTextureS(mTex_Emozy[block.ids[0]], mTex_Empty[i + 9].x, mTex_Empty[i + 9].y, MAX, 2);
+        DrawTextureS(mTex_Emozy[block.ids[1]], mTex_Empty[i + 10].x, mTex_Empty[i + 10].y, MAX, 2);
+        DrawTextureS(mTex_Emozy[block.ids[2]], mTex_Empty[i + 11].x, mTex_Empty[i + 11].y, MAX, 2);
+        DrawTextureS(mTex_Emozy[block.ids[3]], mTex_Empty[i + 1].x, mTex_Empty[i + 1].y, MAX, 2);
+        DrawTextureS(mTex_Emozy[block.ids[4]], mTex_Empty[i - 9].x, mTex_Empty[i - 9].y, MAX, 2);
+        mTex_Empty[i + 11].isEmpty = mTex_Empty[i + 10].isEmpty = mTex_Empty[i + 9].isEmpty = mTex_Empty[i + 1].isEmpty = mTex_Empty[i - 9].isEmpty = false;
 
-      mTex_Empty[i + 9].id = block.ids[0];
-      mTex_Empty[i + 10].id = block.ids[1];
-      mTex_Empty[i + 11].id = block.ids[2];
-      mTex_Empty[i + 1].id = block.ids[3];
-      mTex_Empty[i - 9].id = block.ids[4];
+        mTex_Empty[i + 9].id = block.ids[0];
+        mTex_Empty[i + 10].id = block.ids[1];
+        mTex_Empty[i + 11].id = block.ids[2];
+        mTex_Empty[i + 1].id = block.ids[3];
+        mTex_Empty[i - 9].id = block.ids[4];
 
-      return true;
+        return true;
     }
     return false;
 }
 
 function test_cSqr(block) {
-  var dis = [];
-  var is = [];
+    var dis = [];
+    var is = [];
     for (let i = 0; i < mTex_Empty.length - 10; i++) {
         if (i % 10 != 9) {
             if (circir(mTex_Empty[i].x, mTex_Empty[i].y, RAD, block.x - (16 * MAX), block.y - (16 * MAX), RAD)) {
                 console.log(mTex_Empty[i].isEmpty + " ~0~ " + mTex_Empty[i + 1].isEmpty + " ~~ " + mTex_Empty[i + 10].isEmpty + " ~~ " + mTex_Empty[i + 11].isEmpty);
                 if (mTex_Empty[i].isEmpty && mTex_Empty[i + 1].isEmpty && mTex_Empty[i + 10].isEmpty && mTex_Empty[i + 11].isEmpty) {
-                  dis.push(Math.sqrt((mTex_Empty[i].x - block.x) * (mTex_Empty[i].x - block.x) + (mTex_Empty[i].y - block.y) * (mTex_Empty[i].y - block.y)));
-                  is.push(i);
+                    dis.push(Math.sqrt((mTex_Empty[i].x - block.x) * (mTex_Empty[i].x - block.x) + (mTex_Empty[i].y - block.y) * (mTex_Empty[i].y - block.y)));
+                    is.push(i);
                 }
                 console.log(mTex_Empty[i].isEmpty + " ~~ " + mTex_Empty[i + 1].isEmpty + " ~~ " + mTex_Empty[i + 10].isEmpty + " ~~ " + mTex_Empty[i + 11].isEmpty);
             }
         }
     }
-    if(dis.length > 0){
-      let i = geti(dis,is);
-      console.log(mTex_Empty[i].isEmpty + " ~1~ " + mTex_Empty[i + 1].isEmpty + " ~~ " + mTex_Empty[i + 10].isEmpty + " ~~ " + mTex_Empty[i + 11].isEmpty);
-      DrawTextureS(mTex_Emozy[block.ids[0]], mTex_Empty[i].x, mTex_Empty[i].y, MAX, 2);
-      DrawTextureS(mTex_Emozy[block.ids[1]], mTex_Empty[i + 1].x, mTex_Empty[i + 1].y, MAX, 2);
-      DrawTextureS(mTex_Emozy[block.ids[2]], mTex_Empty[i + 10].x, mTex_Empty[i + 10].y, MAX, 2);
-      DrawTextureS(mTex_Emozy[block.ids[3]], mTex_Empty[i + 11].x, mTex_Empty[i + 11].y, MAX, 2);
-      mTex_Empty[i].isEmpty = mTex_Empty[i + 1].isEmpty = mTex_Empty[i + 10].isEmpty = mTex_Empty[i + 11].isEmpty = false;
+    if (dis.length > 0) {
+        let i = geti(dis, is);
+        console.log(mTex_Empty[i].isEmpty + " ~1~ " + mTex_Empty[i + 1].isEmpty + " ~~ " + mTex_Empty[i + 10].isEmpty + " ~~ " + mTex_Empty[i + 11].isEmpty);
+        DrawTextureS(mTex_Emozy[block.ids[0]], mTex_Empty[i].x, mTex_Empty[i].y, MAX, 2);
+        DrawTextureS(mTex_Emozy[block.ids[1]], mTex_Empty[i + 1].x, mTex_Empty[i + 1].y, MAX, 2);
+        DrawTextureS(mTex_Emozy[block.ids[2]], mTex_Empty[i + 10].x, mTex_Empty[i + 10].y, MAX, 2);
+        DrawTextureS(mTex_Emozy[block.ids[3]], mTex_Empty[i + 11].x, mTex_Empty[i + 11].y, MAX, 2);
+        mTex_Empty[i].isEmpty = mTex_Empty[i + 1].isEmpty = mTex_Empty[i + 10].isEmpty = mTex_Empty[i + 11].isEmpty = false;
 
-      mTex_Empty[i].id = block.ids[0];
-      mTex_Empty[i + 1].id = block.ids[1];
-      mTex_Empty[i + 10].id = block.ids[2];
-      mTex_Empty[i + 11].id = block.ids[3];
+        mTex_Empty[i].id = block.ids[0];
+        mTex_Empty[i + 1].id = block.ids[1];
+        mTex_Empty[i + 10].id = block.ids[2];
+        mTex_Empty[i + 11].id = block.ids[3];
 
 
-      return true;
+        return true;
     }
     return false;
 }
 
 function test_cStrait4(block) {
-  var dis = [];
-  var is = [];
+    var dis = [];
+    var is = [];
     for (let i = 0; i < mTex_Empty.length; i++) {
         if (i % 10 != 0 && i % 10 != 8 && i % 10 != 9) {
             if (circir(mTex_Empty[i].x, mTex_Empty[i].y, RAD, block.x - (16 * MAX), block.y, RAD)) {
                 if (mTex_Empty[i - 1].isEmpty && mTex_Empty[i].isEmpty && mTex_Empty[i + 1].isEmpty && mTex_Empty[i + 2].isEmpty) {
-                  dis.push(Math.sqrt((mTex_Empty[i].x - block.x) * (mTex_Empty[i].x - block.x) + (mTex_Empty[i].y - block.y) * (mTex_Empty[i].y - block.y)));
-                  is.push(i);
+                    dis.push(Math.sqrt((mTex_Empty[i].x - block.x) * (mTex_Empty[i].x - block.x) + (mTex_Empty[i].y - block.y) * (mTex_Empty[i].y - block.y)));
+                    is.push(i);
 
                 }
 
             }
         }
     }
-    if(dis.length > 0){
-      let i = geti(dis,is);
-      DrawTextureS(mTex_Emozy[block.ids[0]], mTex_Empty[i - 1].x, mTex_Empty[i - 1].y, MAX, 2);
-      DrawTextureS(mTex_Emozy[block.ids[1]], mTex_Empty[i + 0].x, mTex_Empty[i + 0].y, MAX, 2);
-      DrawTextureS(mTex_Emozy[block.ids[2]], mTex_Empty[i + 1].x, mTex_Empty[i + 1].y, MAX, 2);
-      DrawTextureS(mTex_Emozy[block.ids[3]], mTex_Empty[i + 2].x, mTex_Empty[i + 2].y, MAX, 2);
-      mTex_Empty[i - 1].isEmpty = mTex_Empty[i + 0].isEmpty = mTex_Empty[i + 1].isEmpty = mTex_Empty[i + 2].isEmpty = false;
+    if (dis.length > 0) {
+        let i = geti(dis, is);
+        DrawTextureS(mTex_Emozy[block.ids[0]], mTex_Empty[i - 1].x, mTex_Empty[i - 1].y, MAX, 2);
+        DrawTextureS(mTex_Emozy[block.ids[1]], mTex_Empty[i + 0].x, mTex_Empty[i + 0].y, MAX, 2);
+        DrawTextureS(mTex_Emozy[block.ids[2]], mTex_Empty[i + 1].x, mTex_Empty[i + 1].y, MAX, 2);
+        DrawTextureS(mTex_Emozy[block.ids[3]], mTex_Empty[i + 2].x, mTex_Empty[i + 2].y, MAX, 2);
+        mTex_Empty[i - 1].isEmpty = mTex_Empty[i + 0].isEmpty = mTex_Empty[i + 1].isEmpty = mTex_Empty[i + 2].isEmpty = false;
 
 
-      mTex_Empty[i - 1].id = block.ids[0];
-      mTex_Empty[i + 0].id = block.ids[1];
-      mTex_Empty[i + 1].id = block.ids[2];
-      mTex_Empty[i + 2].id = block.ids[3];
+        mTex_Empty[i - 1].id = block.ids[0];
+        mTex_Empty[i + 0].id = block.ids[1];
+        mTex_Empty[i + 1].id = block.ids[2];
+        mTex_Empty[i + 2].id = block.ids[3];
 
 
-      return true;
+        return true;
     }
     return false;
 }
 
 function test_c3R(block) {
-  var dis = [];
-  var is = [];
+    var dis = [];
+    var is = [];
     for (let i = 0; i < mTex_Empty.length - 10; i++) {
         if (i % 10 != 9) {
             if (circir(mTex_Empty[i].x, mTex_Empty[i].y, RAD, block.x - (16 * MAX), block.y - (16 * MAX), RAD)) {
                 if (mTex_Empty[i].isEmpty && mTex_Empty[i + 1].isEmpty && mTex_Empty[i + 10].isEmpty) {
-                  dis.push(Math.sqrt((mTex_Empty[i].x - block.x) * (mTex_Empty[i].x - block.x) + (mTex_Empty[i].y - block.y) * (mTex_Empty[i].y - block.y)));
-                  is.push(i);
+                    dis.push(Math.sqrt((mTex_Empty[i].x - block.x) * (mTex_Empty[i].x - block.x) + (mTex_Empty[i].y - block.y) * (mTex_Empty[i].y - block.y)));
+                    is.push(i);
                 }
             }
         }
     }
-    if(dis.length > 0){
-      let i = geti(dis,is);
+    if (dis.length > 0) {
+        let i = geti(dis, is);
 
-      DrawTextureS(mTex_Emozy[block.ids[0]], mTex_Empty[i + 0].x, mTex_Empty[i].y, MAX, 2);
-      DrawTextureS(mTex_Emozy[block.ids[1]], mTex_Empty[i + 1].x, mTex_Empty[i + 1].y, MAX, 2);
-      DrawTextureS(mTex_Emozy[block.ids[2]], mTex_Empty[i + 10].x, mTex_Empty[i + 10].y, MAX, 2);
-      mTex_Empty[i].isEmpty = mTex_Empty[i + 1].isEmpty = mTex_Empty[i + 10].isEmpty = false;
+        DrawTextureS(mTex_Emozy[block.ids[0]], mTex_Empty[i + 0].x, mTex_Empty[i].y, MAX, 2);
+        DrawTextureS(mTex_Emozy[block.ids[1]], mTex_Empty[i + 1].x, mTex_Empty[i + 1].y, MAX, 2);
+        DrawTextureS(mTex_Emozy[block.ids[2]], mTex_Empty[i + 10].x, mTex_Empty[i + 10].y, MAX, 2);
+        mTex_Empty[i].isEmpty = mTex_Empty[i + 1].isEmpty = mTex_Empty[i + 10].isEmpty = false;
 
-      mTex_Empty[i + 0].id = block.ids[0];
-      mTex_Empty[i + 1].id = block.ids[1];
-      mTex_Empty[i + 10].id = block.ids[2];
+        mTex_Empty[i + 0].id = block.ids[0];
+        mTex_Empty[i + 1].id = block.ids[1];
+        mTex_Empty[i + 10].id = block.ids[2];
 
 
-      return true;
+        return true;
     }
     return false;
 }
 
 function test_c3x3(block) {
-  var dis = [];
-  var is = [];
+    var dis = [];
+    var is = [];
     for (let i = 10; i < mTex_Empty.length - 10; i++) {
         if (i % 10 != 0 && i % 10 != 9) {
             if (circir(mTex_Empty[i].x, mTex_Empty[i].y, RAD, block.x, block.y, RAD)) {
                 if (mTex_Empty[i - 11].isEmpty && mTex_Empty[i - 10].isEmpty && mTex_Empty[i - 9].isEmpty &&
                     mTex_Empty[i - 1].isEmpty && mTex_Empty[i + 0].isEmpty && mTex_Empty[i + 1].isEmpty &&
                     mTex_Empty[i + 9].isEmpty && mTex_Empty[i + 10].isEmpty && mTex_Empty[i + 11].isEmpty) {
-                      dis.push(Math.sqrt((mTex_Empty[i].x - block.x) * (mTex_Empty[i].x - block.x) + (mTex_Empty[i].y - block.y) * (mTex_Empty[i].y - block.y)));
-                      is.push(i);
+                    dis.push(Math.sqrt((mTex_Empty[i].x - block.x) * (mTex_Empty[i].x - block.x) + (mTex_Empty[i].y - block.y) * (mTex_Empty[i].y - block.y)));
+                    is.push(i);
 
                 }
             }
         }
     }
-    if(dis.length > 0){
-      let i = geti(dis,is);
-      DrawTextureS(mTex_Emozy[block.ids[0]], mTex_Empty[i - 11].x, mTex_Empty[i - 11].y, MAX, 2);
-      DrawTextureS(mTex_Emozy[block.ids[1]], mTex_Empty[i - 10].x, mTex_Empty[i - 10].y, MAX, 2);
-      DrawTextureS(mTex_Emozy[block.ids[2]], mTex_Empty[i - 9].x, mTex_Empty[i - 9].y, MAX, 2);
-      DrawTextureS(mTex_Emozy[block.ids[3]], mTex_Empty[i - 1].x, mTex_Empty[i - 1].y, MAX, 2);
-      DrawTextureS(mTex_Emozy[block.ids[4]], mTex_Empty[i + 0].x, mTex_Empty[i + 0].y, MAX, 2);
-      DrawTextureS(mTex_Emozy[block.ids[5]], mTex_Empty[i + 1].x, mTex_Empty[i + 1].y, MAX, 2);
-      DrawTextureS(mTex_Emozy[block.ids[6]], mTex_Empty[i + 9].x, mTex_Empty[i + 9].y, MAX, 2);
-      DrawTextureS(mTex_Emozy[block.ids[7]], mTex_Empty[i + 10].x, mTex_Empty[i + 10].y, MAX, 2);
-      DrawTextureS(mTex_Emozy[block.ids[8]], mTex_Empty[i + 11].x, mTex_Empty[i + 11].y, MAX, 2);
-      mTex_Empty[i - 11].isEmpty = mTex_Empty[i - 10].isEmpty = mTex_Empty[i - 9].isEmpty = mTex_Empty[i - 1].isEmpty = mTex_Empty[i + 0].isEmpty = false;
-      mTex_Empty[i + 1].isEmpty = mTex_Empty[i + 9].isEmpty = mTex_Empty[i + 10].isEmpty = mTex_Empty[i + 11].isEmpty = false;
-      mTex_Empty[i - 11].id = block.ids[0];
-      mTex_Empty[i - 10].id = block.ids[1];
-      mTex_Empty[i - 9].id = block.ids[2];
-      mTex_Empty[i - 1].id = block.ids[3];
-      mTex_Empty[i + 0].id = block.ids[4];
-      mTex_Empty[i + 1].id = block.ids[5];
-      mTex_Empty[i + 9].id = block.ids[6];
-      mTex_Empty[i + 10].id = block.ids[7];
-      mTex_Empty[i + 11].id = block.ids[8];
+    if (dis.length > 0) {
+        let i = geti(dis, is);
+        DrawTextureS(mTex_Emozy[block.ids[0]], mTex_Empty[i - 11].x, mTex_Empty[i - 11].y, MAX, 2);
+        DrawTextureS(mTex_Emozy[block.ids[1]], mTex_Empty[i - 10].x, mTex_Empty[i - 10].y, MAX, 2);
+        DrawTextureS(mTex_Emozy[block.ids[2]], mTex_Empty[i - 9].x, mTex_Empty[i - 9].y, MAX, 2);
+        DrawTextureS(mTex_Emozy[block.ids[3]], mTex_Empty[i - 1].x, mTex_Empty[i - 1].y, MAX, 2);
+        DrawTextureS(mTex_Emozy[block.ids[4]], mTex_Empty[i + 0].x, mTex_Empty[i + 0].y, MAX, 2);
+        DrawTextureS(mTex_Emozy[block.ids[5]], mTex_Empty[i + 1].x, mTex_Empty[i + 1].y, MAX, 2);
+        DrawTextureS(mTex_Emozy[block.ids[6]], mTex_Empty[i + 9].x, mTex_Empty[i + 9].y, MAX, 2);
+        DrawTextureS(mTex_Emozy[block.ids[7]], mTex_Empty[i + 10].x, mTex_Empty[i + 10].y, MAX, 2);
+        DrawTextureS(mTex_Emozy[block.ids[8]], mTex_Empty[i + 11].x, mTex_Empty[i + 11].y, MAX, 2);
+        mTex_Empty[i - 11].isEmpty = mTex_Empty[i - 10].isEmpty = mTex_Empty[i - 9].isEmpty = mTex_Empty[i - 1].isEmpty = mTex_Empty[i + 0].isEmpty = false;
+        mTex_Empty[i + 1].isEmpty = mTex_Empty[i + 9].isEmpty = mTex_Empty[i + 10].isEmpty = mTex_Empty[i + 11].isEmpty = false;
+        mTex_Empty[i - 11].id = block.ids[0];
+        mTex_Empty[i - 10].id = block.ids[1];
+        mTex_Empty[i - 9].id = block.ids[2];
+        mTex_Empty[i - 1].id = block.ids[3];
+        mTex_Empty[i + 0].id = block.ids[4];
+        mTex_Empty[i + 1].id = block.ids[5];
+        mTex_Empty[i + 9].id = block.ids[6];
+        mTex_Empty[i + 10].id = block.ids[7];
+        mTex_Empty[i + 11].id = block.ids[8];
 
 
-      return true;
+        return true;
     }
     return false;
 }
 
 function test_c1x2(block) {
-  var dis = [];
-  var is = [];
+    var dis = [];
+    var is = [];
     for (let i = 0; i < mTex_Empty.length - 10; i++) {
         if (circir(mTex_Empty[i].x, mTex_Empty[i].y, RAD, block.x, block.y - (16 * MAX), RAD)) {
             if (mTex_Empty[i].isEmpty && mTex_Empty[i + 10].isEmpty) {
-              dis.push(Math.sqrt((mTex_Empty[i].x - block.x) * (mTex_Empty[i].x - block.x) + (mTex_Empty[i].y - block.y) * (mTex_Empty[i].y - block.y)));
-              is.push(i);
+                dis.push(Math.sqrt((mTex_Empty[i].x - block.x) * (mTex_Empty[i].x - block.x) + (mTex_Empty[i].y - block.y) * (mTex_Empty[i].y - block.y)));
+                is.push(i);
             }
         }
     }
-    if(dis.length > 0){
-      let i = geti(dis,is);
-      DrawTextureS(mTex_Emozy[block.ids[0]], mTex_Empty[i + 0].x, mTex_Empty[i].y, MAX, 2);
-      DrawTextureS(mTex_Emozy[block.ids[1]], mTex_Empty[i + 10].x, mTex_Empty[i + 10].y, MAX, 2);
-      mTex_Empty[i].isEmpty = mTex_Empty[i + 10].isEmpty = false;
-      mTex_Empty[i + 0].id = block.ids[0];
-      mTex_Empty[i + 10].id = block.ids[1];
-      return true;
+    if (dis.length > 0) {
+        let i = geti(dis, is);
+        DrawTextureS(mTex_Emozy[block.ids[0]], mTex_Empty[i + 0].x, mTex_Empty[i].y, MAX, 2);
+        DrawTextureS(mTex_Emozy[block.ids[1]], mTex_Empty[i + 10].x, mTex_Empty[i + 10].y, MAX, 2);
+        mTex_Empty[i].isEmpty = mTex_Empty[i + 10].isEmpty = false;
+        mTex_Empty[i + 0].id = block.ids[0];
+        mTex_Empty[i + 10].id = block.ids[1];
+        return true;
     }
     return false;
 }
 
 function test_c1x3(block) {
-  var dis = [];
-  var is = [];
+    var dis = [];
+    var is = [];
     for (let i = 10; i < mTex_Empty.length - 10; i++) {
         if (circir(mTex_Empty[i].x, mTex_Empty[i].y, RAD, block.x, block.y, RAD)) {
-          if (mTex_Empty[i-10].isEmpty && mTex_Empty[i + 0].isEmpty && mTex_Empty[i + 10].isEmpty){
-            dis.push(Math.sqrt((mTex_Empty[i].x - block.x) * (mTex_Empty[i].x - block.x) + (mTex_Empty[i].y - block.y) * (mTex_Empty[i].y - block.y)));
-            is.push(i);
-          }
+            if (mTex_Empty[i - 10].isEmpty && mTex_Empty[i + 0].isEmpty && mTex_Empty[i + 10].isEmpty) {
+                dis.push(Math.sqrt((mTex_Empty[i].x - block.x) * (mTex_Empty[i].x - block.x) + (mTex_Empty[i].y - block.y) * (mTex_Empty[i].y - block.y)));
+                is.push(i);
+            }
         }
     }
-    if(dis.length > 0){
-      let i = geti(dis,is);
-      DrawTextureS(mTex_Emozy[block.ids[0]], mTex_Empty[i-10].x, mTex_Empty[i-10].y, MAX, 2);
-      DrawTextureS(mTex_Emozy[block.ids[1]], mTex_Empty[i + 0].x, mTex_Empty[i + 0].y, MAX, 2);
-      DrawTextureS(mTex_Emozy[block.ids[2]], mTex_Empty[i + 10].x, mTex_Empty[i + 10].y, MAX, 2);
-      mTex_Empty[i].isEmpty = mTex_Empty[i + 10].isEmpty = mTex_Empty[i - 10].isEmpty = false;
-      mTex_Empty[i - 10].id = block.ids[0];
-      mTex_Empty[i +  0].id = block.ids[1];
-      mTex_Empty[i + 10].id = block.ids[2];
-      return true;
+    if (dis.length > 0) {
+        let i = geti(dis, is);
+        DrawTextureS(mTex_Emozy[block.ids[0]], mTex_Empty[i - 10].x, mTex_Empty[i - 10].y, MAX, 2);
+        DrawTextureS(mTex_Emozy[block.ids[1]], mTex_Empty[i + 0].x, mTex_Empty[i + 0].y, MAX, 2);
+        DrawTextureS(mTex_Emozy[block.ids[2]], mTex_Empty[i + 10].x, mTex_Empty[i + 10].y, MAX, 2);
+        mTex_Empty[i].isEmpty = mTex_Empty[i + 10].isEmpty = mTex_Empty[i - 10].isEmpty = false;
+        mTex_Empty[i - 10].id = block.ids[0];
+        mTex_Empty[i + 0].id = block.ids[1];
+        mTex_Empty[i + 10].id = block.ids[2];
+        return true;
     }
     return false;
 }
-function geti(dis,is){
-  let len = dis[0];
-  let i = is[0];
-  for (let j = 1; j < dis.length; j++) {
-     if(len > dis[j]){
-       len = dis[j];
-       i = is[j];
-     }
-  }
-  return i;
+
+function geti(dis, is) {
+    let len = dis[0];
+    let i = is[0];
+    for (let j = 1; j < dis.length; j++) {
+        if (len > dis[j]) {
+            len = dis[j];
+            i = is[j];
+        }
+    }
+    return i;
 }
