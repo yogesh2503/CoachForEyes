@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Game</title>
+    <link rel="canonical" href="https://getbootstrap.com/docs/4.0/examples/checkout/">
+    <link rel="icon" href="./fav.png">
+    <!-- Bootstrap core CSS -->
+    <!-- <link href="./Bootstrap/bootstrap.min.css" rel="stylesheet"> -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <!-- Custom styles for this template -->
+    <link href="./Bootstrap/form-validation.css" rel="stylesheet">
+</head>
+
+
+
+<body class="bg-light" data-gr-c-s-loaded="true">
+
+    <div class="container">
+        <div class="py-5 text-center">
+            <img class="d-block mx-auto mb-4" src="./assets/logo.jpg" alt="" width="188" height="128">
+            <h2>Welcome</h2>
+            <p class="lead">Below is an example form built entirely with Bootstrap's form controls. Each required form group has a validation state that can be triggered by attempting to submit the form without completing it.</p>
+        </div>
+
+        <div class="container" id="httvalidation">
+            <h4 class="mb-3">Validation</h4>
+            <form class="needs-validation" novalidate="">
+                <div class="mb-3">
+                    <label for="coupancode">Coupon code</label>
+                    <input type="text" class="form-control" id="coupancode" placeholder="enter coupon code" required="">
+                    <div class="invalid-feedback">
+                        Please enter your shipping address.
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <button class="btn btn-primary btn-lg btn-block" id="btnvalidate" type="submit">Continue</button>
+                        <div class="spinner-grow text-success" role="status" id="spnvalidate" style="display: none;">
+                            <span class="sr-only justify-content-center">Loading...</span>
+                        </div>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+        <div class="container" id="httreg" style="display: none;">
+            <h4 class="mb-3">Registration</h4>
+            <form class="reg-validation" novalidate="">
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+                        <label for="httname">Name</label>
+                        <input type="text" class="form-control" id="httname" placeholder="Enter the name" value="" required="">
+                        <div class="invalid-feedback">
+                            Valid name is required.
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="phoneno">Phone Numner</label>
+                        <input type="text" class="form-control" id="phoneno" placeholder="" value="" required="" maxlength="10" onkeypress="return event.charCode >= 48 && event.charCode <= 57" required>
+
+                        <div class="invalid-feedback" id="phonenoinvalid">
+                            Valid phoneno is required.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-5 mb-3">
+                        <label for="country">Nationality</label>
+                        <select class="custom-select d-block w-100" id="country" required="">
+                      <option value="">Choose...</option>
+                      
+                    </select>
+                        <div class="invalid-feedback">
+                            Please select a valid country.
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="state">Area</label>
+                        <select class="custom-select d-block w-100" id="state" required="">
+                            <option value="">Choose...</option>
+                            
+                        </select>
+                        <div class="invalid-feedback">
+                            Please provide a valid state.
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="birthid">Year of birth</label>
+                        <!-- <input type="year" class="form-control" id="birthid" placeholder="" value="" required="" max="2017-12-30">
+                        <div class="invalid-feedback">
+                            Valid birth Date is required.
+                        </div> -->
+                        <select class="custom-select d-block w-100" id="year" required="">
+                            <option value="">Choose...</option>
+                            
+                        </select>
+                        <div class="invalid-feedback">
+                            Please provide a valid year.
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="mb-4">
+                <button class="btn btn-primary btn-lg btn-block" type="submit">Continue</button>
+            </form>
+
+        </div>
+        <div class="container" id="loding">
+
+        </div>
+        <br>
+    </div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="./Bootstrap/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script>
+        window.jQuery || document.write('<script src="../../assets/js/vendor/jquery-slim.min.js"><\/script>')
+    </script>
+    <script src="./Bootstrap/popper.min.js"></script>
+    <script src="./Bootstrap/bootstrap.min.js"></script>
+    <script src="./Bootstrap/holder.min.js"></script>
+    <script>
+        // Example starter JavaScript for disabling form submissions if there are invalid fields
+        (function() {
+            'use strict';
+            window.addEventListener('load', function() {
+                var forms = document.getElementsByClassName('needs-validation');
+                // Loop over them and prevent submission
+                var validation = Array.prototype.filter.call(forms, function(form) {
+                    console.log("!!!dd!!!");
+                    form.addEventListener('submit', function(event) {
+                        console.log("!!!!dd!! " + form.checkValidity()); {
+                            event.preventDefault();
+                            event.stopPropagation();
+
+                        }
+                        if (form.checkValidity() === true) {
+
+                            document.getElementById("btnvalidate").style.display = "none";
+                            document.getElementById("spnvalidate").style.display = "block";
+                            validate(document.getElementById("coupancode").value);
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+
+
+                var forms = document.getElementsByClassName('reg-validation');
+                // Loop over them and prevent submission
+                var validation = Array.prototype.filter.call(forms, function(form) {
+                    console.log("!!!ss!!!");
+                    form.addEventListener('submit', function(event) {
+                        console.log("!!!ss!!! " + form.checkValidity()); {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+
+                        phn = document.getElementById("phoneno").value;
+                        var phonenoinvalid = document.getElementById("phonenoinvalid");
+                        if (phn.length != 10) {
+                            phonenoinvalid.classList.add("d-block");
+                        } else {
+                            phonenoinvalid.className = 'invalid-feedback';
+
+                        }
+
+
+                        if (form.checkValidity() === true && phn.length == 10) {
+                            Registration();
+                            //window.location.href = "./index.html";
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+                document.getElementById("httreg").style.display = "none";
+
+
+                setArea();
+                setNationality();
+
+            }, false);
+
+        })();
+
+
+        var uname, phn, contry, area, date, CouponCode, UserSessionID, PinCode;
+
+        function validate(str) {
+            CouponCode = str;
+            console.log("~~SignIn2~~" + str);
+            var data = JSON.stringify({
+                "CouponCode": str
+            });
+            var xhr = new XMLHttpRequest();
+            xhr.addEventListener("readystatechange", function() {
+                if (this.readyState === 4) {
+                    json = JSON.parse(this.responseText);
+                    console.log(json.Valid + "~~SignIn 0~~" + this.responseText);
+                    if (json.Valid == true) {
+                        document.getElementById("httvalidation").style.display = "none";
+                        document.getElementById("httreg").style.display = "block";
+                    } else {
+                        document.getElementById("btnvalidate").style.display = "block";
+                        document.getElementById("spnvalidate").style.display = "none";
+                        alert("Coupons you've entered is not valid");
+                    }
+                }
+            });
+            xhr.open("POST", "https://www.anzrottaps.com/api/Games/Validate");
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send(data);
+        }
+
+        function Registration() {
+            uname = document.getElementById("httname").value;
+            phn = document.getElementById("phoneno").value;
+            contry = document.getElementById("country").value;
+            area = document.getElementById("state").value;
+            // var dt = new Date($('#birthid').val());
+            // ddate = document.getElementById("birthid");
+            // var dt = new Date(ddate.value);
+            // var day = (dt.getDate() > 9 ? "" : "0") + dt.getDate();
+            // var month = (dt.getMonth() > 8 ? "" : "0") + (dt.getMonth() + 1);
+            // var year = dt.getFullYear();
+            // date = year + month + day;
+            date = document.getElementById("year").value;
+            var data = JSON.stringify({
+                "Name": uname,
+                "Phone": phn,
+                "DateOfBirth": date,
+                "Nationality": contry,
+                "Area": area
+            });
+            console.log(data);
+
+            // return;
+            var xhr = new XMLHttpRequest();
+            xhr.withCredentials = true;
+
+            xhr.addEventListener("readystatechange", function() {
+                if (this.readyState === 4) {
+                    console.log(this.responseText);
+                    var json = JSON.parse(this.responseText);
+                    if (json.Success == true) {
+                        PinCode = json.PinCode;
+                        UserSessionID = json.UserSessionID;
+                        setStore();
+                        var url = "./index.html?UserSessionID=" + UserSessionID + "&PinCode=" + PinCode +
+                            "&name=" + uname +
+                            "&phone=" + phn +
+                            "&contry=" + contry +
+                            "&area=" + area +
+                            "&date=" + date +
+                            "&CouponCode=" + CouponCode;
+                        console.log(url);
+                        window.location.href = "./game.html";
+                    } else {
+                        alert("Please try again later!");
+                    }
+                }
+            });
+            xhr.open("POST", "https://www.anzrottaps.com/api/Games/Registration");
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send(data);
+        }
+
+        function setStore() {
+            try {
+                var sid = 'htt';
+                localStorage.setItem("UserSessionID" + sid, UserSessionID);
+                localStorage.setItem("PinCode" + sid, PinCode);
+                localStorage.setItem("name" + sid, uname);
+                localStorage.setItem("phone" + sid, phn);
+                localStorage.setItem("contry" + sid, contry);
+                localStorage.setItem("area" + sid, area);
+                localStorage.setItem("date" + sid, date);
+                localStorage.setItem("CouponCode" + sid, CouponCode);
+            } catch (err) {
+                console.log("~~~~~~~setStore JS~~~~~~" + err);
+            }
+            console.log(UserSessionID + " ~pin~ " + PinCode + " ~~name~~ " + uname + " ~mo~ " + phn + " ~con~ " + contry + " ~ara~ " + area + " ~d~ " + date + " ~c~ " + CouponCode);
+        }
+
+        function setArea() {
+            var yr = document.getElementById("year")
+            for (let i = 0; i < 100; i++) {
+                var reg_option = document.createElement('option');
+                reg_option.innerHTML = 2015 - i;
+                yr.appendChild(reg_option);
+            }
+
+
+            var xhr = new XMLHttpRequest();
+            xhr.withCredentials = true;
+            xhr.addEventListener("readystatechange", function() {
+                if (this.readyState === 4) {
+                    console.log(this.responseText);
+                    var json = JSON.parse(this.responseText);
+                    var area = document.getElementById("state")
+                    for (let i = 0; i < json.length; i++) {
+                        console.log(i + ':)' + json[i].Area);
+                        var reg_option = document.createElement('option');
+                        reg_option.innerHTML = json[i].Area;
+                        area.appendChild(reg_option);
+                    }
+                }
+            });
+            xhr.open("GET", "https://www.anzrottaps.com/api/Games/GetAreas");
+            xhr.send();
+        }
+
+        function setNationality() {
+            var xhr = new XMLHttpRequest();
+            xhr.withCredentials = true;
+            xhr.addEventListener("readystatechange", function() {
+                if (this.readyState === 4) {
+                    console.log(this.responseText);
+                    var json = JSON.parse(this.responseText);
+                    var country = document.getElementById("country")
+                    for (let i = 0; i < json.length; i++) {
+                        console.log(i + ' :Nationality) ' + json[i].Area);
+                        var reg_option = document.createElement('option');
+                        reg_option.innerHTML = json[i].Nationality;
+                        country.appendChild(reg_option);
+                    }
+                }
+            });
+            xhr.open("GET", "https://www.anzrottaps.com/api/Games/GetNationality");
+            xhr.send();
+        }
+    </script>
+
+
+</body>
+
+</html>

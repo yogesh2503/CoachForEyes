@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>MAHJONG</title>
+    <style>
+        body {
+            margin: 0px;
+            padding: 0px;
+            position: fixed;
+        }
+        
+        #turn {
+            width: 100%;
+            height: 100%;
+            position: fixed;
+            top: 0px;
+            left: 0px;
+            background-color: white;
+            background-repeat: no-repeat;
+            background-position: center center;
+            display: none;
+            z-index: 2;
+        }
+        
+        .center-block {
+            margin: auto;
+            display: block;
+            position: absolute;
+            z-index: 1;
+            left: 30%;
+            top: 30%;
+            width: 40%;
+            height: 20px;
+            /* background-color: green; */
+        }
+        
+        .center-block2 {
+            margin: auto;
+            display: block;
+            position: absolute;
+            z-index: 1;
+            left: 30%;
+            top: 20%;
+            width: 40%;
+            height: 20px;
+            /* background-color: green; */
+        }
+        
+        input {
+            width: 100%;
+            padding: 6px 6px;
+            margin: 4px 0;
+            box-sizing: border-box;
+            border: none;
+            font-size: 18px;
+            border-bottom: 2px solid rgb(158, 158, 158);
+        }
+        
+        label {
+            margin-top: 10px;
+            display: inline-block;
+            font-size: 24px;
+            border: none;
+            color: black;
+        }
+    </style>
+</head>
+
+<body>
+    <script src="./basic/three.min.js"></script>
+    <script src="./basic/three-ui.min.js"></script>
+    <script src="./basic/asset-loader.min.js"></script>
+    <script src="./basic/TrackballControls.js"></script>
+    <script src="./basic/OBJLoader.js"></script>
+    <script src="./js/loadObj.js"></script>
+    <script src="./js/Basic.js"></script>
+    <script src="./js/Cube.js"></script>
+    <script src="./js/Gameplay.js"></script>
+    <script type="text/javascript">
+        var isLogedin = true;
+        window.onload = function() {
+            // addInputBox(loginids);
+            init();
+        };
+    </script>
+</body>
+
+</html>

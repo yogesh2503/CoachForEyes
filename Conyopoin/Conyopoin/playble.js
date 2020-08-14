@@ -37,9 +37,9 @@ function initstart() {
     CANVAS_HEIGHT = window.innerHeight;
     CANVAS_WIDTH = window.innerWidth;
     ratio = CANVAS_WIDTH / CANVAS_HEIGHT;
-    var ambientLight = new THREE.AmbientLight(0xffffff, .71);
+    var ambientLight = new THREE.AmbientLight(0xffffff, 0.9071);
     scene.add(ambientLight);
-    light = new THREE.DirectionalLight(0x999999, 1.0);
+    light = new THREE.DirectionalLight(0x999999, 0.1);
     light.position.set(0, 200, 200);
     scene.add(light);
     var manager = new THREE.LoadingManager(loadModel);

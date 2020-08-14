@@ -1,0 +1,12 @@
+@font-face {
+  font-family: 'CabinCondensed';
+  src: url('../assets/CabinCondensed.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Cookie';
+  src: url('../assets/Cookie.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
