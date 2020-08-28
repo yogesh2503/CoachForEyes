@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Water Sort 3D</title>
+</head>
+<body>
+  <p style="color:blue">This is demo content.</p>
+    <a style="color:blue" onclick="one('iOS')">Print page</a>
+    <script type="text/javascript">
+        var isLogedin = true;
+        window.onload = function() {
+          // onLoad();
+        };
+        if (mraid.getState() === 'loading') {
+            mraid.addEventListener('ready', onSdkReady);
+        } else {
+          onSdkReady();
+        }
+        function viewableChangeHandler(viewable) {
+          // start/pause/resume gameplay, stop/play sounds
+          if(viewable) {
+            showMyAd();
+          } else {
+            // pause
+          }
+        }
+
+        function onSdkReady() {
+          mraid.addEventListener('viewableChange', viewableChangeHandler);
+          // Wait for the ad to become viewable for the first time
+          if (mraid.isViewable()) {
+            showMyAd();
+          }
+        }
+        function showMyAd() {
+        onLoad();
+        }
+
+        function one(platform){
+            switch (platform) {
+              case "Android":mraid.open("https://play.google.com/store/apps/details?id=water.sort.3d"); break;
+              case "iOS":mraid.open("https://apps.apple.com/us/app/water-sort-3d/id1524105355");break;
+            }
+        }
+        function onLoad() {
+            addClient();
+            addDesription();
+        }
+
+
+        function addClient() {
+            var prject = document.createElement('div');
+            prject.appendChild(addInputBox("PROJECT", "Software Development"));
+            prject.appendChild(addInputBox("CLIENT", "Software Development"));
+            prject.appendChild(addInputBox("Address", "Software Development"));
+            prject.appendChild(addInputBox("EMAIL", "Software Development"));
+            prject.appendChild(addInputBox("DATE", "Software Development"));
+            document.body.appendChild(prject);
+        }
+
+        function addDesription() {
+            var prject = document.createElement('div');
+            prject.appendChild(addDescription("yogesh", "desriptions", "$1000"));
+            prject.appendChild(addTotal("$1000"));
+            document.body.appendChild(prject);
+        }
+
+
+        function addInputBox(spn, txt) {
+            var _div = document.createElement('div');
+            _div.innerHTML = "<span>" + spn + "</span>" + txt;
+            _div.setAttribute("style", "color:green");
+            return _div;
+        }
+
+        function addDescription(service, desc, total) {
+            var _tr = document.createElement('tr');
+            _tr.appendChild(setElement("td", "service", service));
+            _tr.appendChild(setElement("td", "desc", desc));
+            _tr.appendChild(setElement("td", "unit", ""));
+            _tr.appendChild(setElement("td", "qty", ""));
+            _tr.appendChild(setElement("td", "total", total));
+            return _tr;
+        }
+        function addTotal(text) {
+            var _tr = document.createElement('tr');
+            var text = setElement("td", "grand total", "GRAND TOTAL");
+            text.setAttribute("colspan", "4");
+            text.setAttribute("style", "color:blue");
+
+            _tr.appendChild(text);
+            _tr.appendChild(setElement("td", "grand total", "$1,040.00"));
+            return _tr;
+        }
+
+        function setElement(type, cls, vls) {
+            var _type = document.createElement(type);
+            _type.setAttribute('class', cls);
+            _type.setAttribute("style", "color:blue");
+            _type.innerHTML = vls;
+            return _type;
+        }
+    </script>
+</body>
+
+</html>

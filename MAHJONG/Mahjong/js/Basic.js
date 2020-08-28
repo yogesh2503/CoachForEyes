@@ -18,13 +18,7 @@ const BOTTOM = 0;
 const RIGHT = 1;
 const LEFT = 2;
 const UP = 3;
-var sx = 0,
-  sy = 0,
-  sz = 0,
-  rx = 0,
-  ry = 0,
-  rz = 0,
-  clr = 0;
+var sx = 0, sy = 0, sz = 0, rx = 0, ry = 0, rz = 0, clr = 0;
 var loginids = {
   id: "httdivlogin",
   css: "center-block",
@@ -66,6 +60,12 @@ var regids = {
       lbl: "Password",
       type: "password",
     },
+    {
+      placeholder: "Confirm Password",
+      id: "httregconpass",
+      lbl: "Confirm Password",
+      type: "password",
+    },
   ],
 };
 
@@ -97,7 +97,7 @@ function inputBox(placeholder, id, lbl, type) {
   var label = document.createElement("label");
   label.setAttribute("for", id);
   label.innerHTML = lbl;
-  div.appendChild(label);
+  //div.appendChild(label);
   div.appendChild(input);
   return div;
 }
@@ -349,14 +349,14 @@ function hexToRgb(hex) {
   var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result
     ? new THREE.Color(
-        "rgb(" +
-          parseInt(result[1], 16) +
-          "," +
-          parseInt(result[2], 16) +
-          "," +
-          parseInt(result[3], 16) +
-          ")"
-      )
+      "rgb(" +
+      parseInt(result[1], 16) +
+      "," +
+      parseInt(result[2], 16) +
+      "," +
+      parseInt(result[3], 16) +
+      ")"
+    )
     : null;
 }
 

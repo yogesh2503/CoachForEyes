@@ -1,22 +1,3 @@
-var counter = 0, meshLoading, isResize = 0, mTex_logo = null, objCount = 0, mHScore = 0, mScore = 0, setVal = true, isResize = 0, ratio = 1, mSel = 0;
-var mTex_Cookie = [], mTex_fonts = Array(20);
-var mTex_Title,
-  mTex_button = Array(3),
-  mTex_top,
-  mTex_btn = Array(2),
-  mTex_coinbar,
-  mTex_icn = Array(9);
-var mTex_popup,
-  mTex_win,
-  mTex_ply = Array(1);
-var scene, camera, clock, renderer, water, gameUI, mPlyer;
-var mTxt_Load;
-var div_Login, div_Regis;
-var mRectCLR = Array();
-var mTex_fontsclr = Array();
-var mTex_Right, mTex_gold_stroke;
-var mTex_Logo2, mTex_BTN0 = [], mTex_BTN1 = [];
-var mTex_forColor, mTex_CardBack, mTex_Icon = [];
 
 function init() {
   scene = new THREE.Scene();
@@ -35,12 +16,23 @@ function init() {
   scene.add(directionalLight);
   meshLoading = new THREE.Mesh(new THREE.BoxBufferGeometry(1, 1, 1), new THREE.MeshNormalMaterial());
   scene.add(meshLoading);
+
+  mPlan_Icon = new THREE.Mesh(new THREE.PlaneGeometry(14, 18), new THREE.MeshBasicMaterial({ color: 0x131d83 }));
+  scene.add(mPlan_Icon);
+  mPlan_Icon.position.set(-22, 12, 18);
+  mPlan_Icon.visible = false;
+
+  mPlan_Green = new THREE.Mesh(new THREE.PlaneGeometry(16, 16), new THREE.MeshBasicMaterial({ color: 0x39ab8e }));
+  scene.add(mPlan_Green);
+  mPlan_Green.visible = false;
+
   loadobj();
   gameUI = new ThreeUI(renderer.domElement, 720);
   mTxt_Load = createTexts("0", 50, "#fff", ThreeUI.anchors.center, ThreeUI.anchors.center, "center", "Helvetica");
   DrawLbl(mTxt_Load, "1%", 0, 100);
+  AssetLoader.add.webFont('CabinCondensed-Bold', 'js/font.css');
   AssetLoader.add.webFont('CabinCondensed', 'js/font.css');
-  AssetLoader.add.webFont('Cookie', 'js/font.css');
+  AssetLoader.add.webFont('RougeScript', 'js/font.css');
   AssetLoader.add.image("assets/logo.png");
   AssetLoader.add.image("assets/button.png");
   AssetLoader.add.image("assets/top.jpg");
@@ -55,6 +47,13 @@ function init() {
   AssetLoader.add.image("assets/button0.png");
   AssetLoader.add.image("assets/button1.png");
   AssetLoader.add.image("assets/logo2.png");
+
+  AssetLoader.add.image("assets/radio_off.png");
+  AssetLoader.add.image("assets/radio_on.png");
+  AssetLoader.add.image("assets/toggle_off.png");
+  AssetLoader.add.image("assets/toggle_on.png");
+
+  AssetLoader.add.image("assets/flower_fullcolor.jpg");
   for (let i = 0; i < mTex_icn.length; i++) {
     AssetLoader.add.image("assets/icn" + i + ".png");
   }
@@ -76,6 +75,7 @@ function init() {
     mTex_Title = loadUI("assets/logo.png", 0, 0, 0);
     mTex_coinbar = loadUI("assets/coinbar.png", 0, 0, 0);
     mTex_Logo2 = loadUI("assets/logo2.png", 0, 0, 0);
+    mTex_flower_fullcolor = loadUI("assets/flower_fullcolor.jpg", 0, 0, 0);
     for (let i = 0; i < mTex_icn.length; i++) {
       mTex_icn[i] = loadUI("assets/icn" + i + ".png", 0, 0, 0);
     }
@@ -102,8 +102,11 @@ function init() {
     for (let i = 0; i < mTex_fonts.length; i++) {
       mTex_fonts[i] = createTexts("100", 20, "#fff", ThreeUI.anchors.center, ThreeUI.anchors.center, "center", "CabinCondensed");
     }
-    for (let i = 0; i < 2; i++) {
-      mTex_Cookie.push(createTexts("100", 20, "#fff", ThreeUI.anchors.center, ThreeUI.anchors.center, "center", "Cookie"));
+    for (let i = 0; i < 3; i++) {
+      mTex_Cookie.push(createTexts("100", 20, "#fff", ThreeUI.anchors.center, ThreeUI.anchors.center, "center", "RougeScript"));
+    }
+    for (let i = 0; i < 3; i++) {
+      mTex_fontsBold.push(createTexts("100", 20, "#fff", ThreeUI.anchors.center, ThreeUI.anchors.center, "center", "CabinCondensed-Bold"));
     }
     mTex_forColor = loadUIRect();
     mTex_forColor.ColorSel = 0; mTex_forColor.alpha = 0.9;
@@ -117,6 +120,10 @@ function init() {
       mTex_fontsclr[i].parent = mTex_forColor;
     }
 
+    mTex_radio_off = loadUI("assets/radio_off.png", 0, 0, 0);
+    mTex_radio_on = loadUI("assets/radio_on.png", 0, 0, 0);
+    mTex_toggle_off = loadUI("assets/toggle_off.png", 0, 0, 0);
+    mTex_toggle_on = loadUI("assets/toggle_on.png", 0, 0, 0);
 
 
     mTex_CardBack = loadUI("assets/cardBack.jpg", 0, 300, 0);
@@ -241,166 +248,6 @@ function Draw() {
 
 function gamereset() { }
 
-function setScreen(scr) {
-  console.log("scr = " + scr);
-  GameScreen = scr;
-  mTex_Cookie.forEach((element) => { element.visible = false; });
-  mTex_BTN1.forEach((element) => { element.visible = false; });
-  mTex_BTN0.forEach((element) => { element.visible = false; });
-  mTex_icn.forEach((element) => { element.visible = false; });
-  mTex_Icon.forEach((element) => { element.visible = false; });
-  mCube.forEach((element) => { element.group.visible = false; });
-  mTex_fonts.forEach((element) => { element.visible = false; });
-  mTex_button.forEach((element) => { element.visible = false; });
-  mTex_btn.forEach((element) => { element.visible = false; });
-  mTex_ply.forEach((element) => { element.visible = false; });
-  mTex_Logo2.visible = mTex_top.visible = mTex_Title.visible = mTex_logo.visible = meshLoading.visible = false;
-  mTex_gold_stroke.visible = mTex_win.visible = mTex_coinbar.visible = mTex_popup.visible = false;
-  m3d_table.visible = false;
-  div_Regis.style.display = div_Login.style.display = "none";
-  camera.position.set(0, -23, 32);
-  camera.rotation.set(0.6, 0, 0);
-
-  switch (GameScreen) {
-    case GAMELOGO: mTex_logo.visible = true;
-      break;
-    case GAMELOGIN:
-      m2D_Background.visible = true;
-      mTex_Title.visible = true;
-      mTex_Title.y = -250;
-      DrawLblA(mTex_fonts[1], "LOGIN", 0, 180, COLOR2, 46, ThreeUI.anchors.center, ThreeUI.anchors.center, "center");
-      DrawLblA(mTex_fonts[0], "Forget Password?", 0, 260, COLOR1, 30, ThreeUI.anchors.center, ThreeUI.anchors.center, "center");
-      DrawLblA(mTex_fonts[2], "Don't have account?", -50, 320, COLOR1, 30, ThreeUI.anchors.center, ThreeUI.anchors.center, "center");
-      DrawLblA(mTex_fonts[3], "Signup", 135, 320, COLOR3, 30, ThreeUI.anchors.center, ThreeUI.anchors.center, "center"); div_Login.style.display = "block";
-      break;
-    case GAMEREG:
-      DrawLblA(mTex_fonts[0], "SIGNUP", 0, -260, COLOR1, 56, ThreeUI.anchors.center, ThreeUI.anchors.center, "center");
-      DrawLblA(mTex_fonts[1], "SIGNUP", 0, 220, COLOR2, 46, ThreeUI.anchors.center, ThreeUI.anchors.center, "center");
-      DrawLblA(mTex_fonts[2], "Already Have an Account? ", -65, 320, COLOR1, 30, ThreeUI.anchors.center, ThreeUI.anchors.center, "center");
-      DrawLblA(mTex_fonts[3], "Login", 150, 320, COLOR3, 30, ThreeUI.anchors.center, ThreeUI.anchors.center, "center"); div_Regis.style.display = "block";
-      break;
-    case GAMEMENU:
-      m2D_Background.visible = true; mTex_Title.visible = true; mTex_Title.y = -150;
-      DrawTransScal(mTex_top, 0, -310, 1024, 64, 1.6, 1);
-      DrawTextureAX(mTex_ply[0], 50, 50, ThreeUI.anchors.left, ThreeUI.anchors.top);
-      DrawTextureAX(mTex_coinbar, 250, 36, ThreeUI.anchors.left, ThreeUI.anchors.top);
-      DrawTextureAX(mTex_icn[4], 50, 50, ThreeUI.anchors.right, ThreeUI.anchors.top);
-      DrawTextureAX(mTex_icn[6], 150, 50, ThreeUI.anchors.right, ThreeUI.anchors.top);
-      DrawTransScal(mTex_button[0], 0, 40, 256, 64, 1.4, 1);
-      DrawTransScal(mTex_button[1], 0, 200, 256, 64, 1.4, 1);
-      DrawLblA(mTex_fonts[1], "1445", 220, 48, COLOR1, 36, ThreeUI.anchors.left, ThreeUI.anchors.top, "center");
-      DrawLblA(mTex_fonts[0], "Jhnson", 190, 90, COLOR2, 40, ThreeUI.anchors.left, ThreeUI.anchors.top, "center");
-      DrawLblA(mTex_fonts[2], "Play Online", 0, 50, COLOR2, 40, ThreeUI.anchors.center, ThreeUI.anchors.center, "center");
-      DrawLblA(mTex_fonts[3], "Play With Friends", 0, 210, COLOR2, 40, ThreeUI.anchors.center, ThreeUI.anchors.center, "center");
-      break;
-    case GAMELANDING:
-      m2D_Background.visible = true;
-
-      m2D_Background.traverse(function (child) {
-        if (child.isMesh) {
-          child.material.map = mTex_BG[1];
-        }
-      });
-      camera.position.set(0, 0, 66);
-      camera.rotation.set(0, 0, 0);
-      m2D_Background.position.set(0, 0, 0);
-
-
-      DrawTransScal(mTex_Logo2, -380, -200, 512, 256, 1, 1);
-
-      DrawTransScal(mTex_BTN0[0], 220, 100, 166, 102, 1, 1);
-      DrawTransScal(mTex_BTN0[1], 220, 260, 166, 102, 1, 1);
-
-      DrawTransScal(mTex_BTN1[0], 20, 100, 128, 128, 1, 1);
-      DrawTransScal(mTex_BTN1[1], 420, 100, 128, 128, 1, 1);
-      DrawTransScal(mTex_BTN1[2], 20, 260, 128, 128, 1, 1);
-      DrawTransScal(mTex_BTN1[3], 420, 260, 128, 128, 1, 1);
-      for (var i = 0; i < 10; i++) {
-        mCube[i].setForLanding(Math.PI * i)
-      }
-      mCube[0].group.visible = true;
-
-
-      DrawLblA(mTex_Cookie[0], "Play online mah jongg\nwith your National Mah\nJongg League 2020 card", 260, -280, COLOR4, 50, ThreeUI.anchors.center, ThreeUI.anchors.center, "center");
-      DrawLblA(mTex_Cookie[1], "Play with Friends,\nComputer Bots or\nMeet New Friends", 240, -100, COLOR4, 50, ThreeUI.anchors.center, ThreeUI.anchors.center, "center");
-
-      DrawTransScal(mTex_Icon[0], -20, -250, 84, 84, 1, 1);
-      DrawTransScal(mTex_Icon[1], -20, -70, 84, 84, 1, 1);
-
-
-      DrawLblA(mTex_fonts[0], "LET'S\nPLAY\nMAHJ!", 15, 80, COLOR4, 32, ThreeUI.anchors.center, ThreeUI.anchors.center, "center");
-      DrawLblA(mTex_fonts[1], "MY PROFILE", 220, 110, COLOR4, 32, ThreeUI.anchors.center, ThreeUI.anchors.center, "center");
-      DrawLblA(mTex_fonts[2], "LET'S\nMAHJ\nNEWS", 420, 80, COLOR4, 32, ThreeUI.anchors.center, ThreeUI.anchors.center, "center");
-
-      DrawLblA(mTex_fonts[3], "JOIN THE\nMAHJ\nGROUP", 17, 240, COLOR4, 32, ThreeUI.anchors.center, ThreeUI.anchors.center, "center");
-      DrawLblA(mTex_fonts[4], "TOURNAMENTS", 220, 270, COLOR4, 26, ThreeUI.anchors.center, ThreeUI.anchors.center, "center");
-      DrawLblA(mTex_fonts[5], "FAQ", 420, 270, COLOR4, 32, ThreeUI.anchors.center, ThreeUI.anchors.center, "center");
-
-
-      // DrawLblA(mTex_fonts[0], "American Mah Jongg Online - grab a NMJL 2020 card!", 0, -100, COLOR4, 24, ThreeUI.anchors.center, ThreeUI.anchors.center, "center");
-      // DrawTransScal(mTex_gold_stroke, 0, 80, 800, 100, 1, 1);
-      // //  mTex_Icon
-      // DrawTransScal(mTex_Icon[0], -420, -7, 54, 54, 1, 1);
-      // DrawTransScal(mTex_Icon[1], -177, -7, 54, 54, 1, 1);
-      // DrawTransScal(mTex_Icon[2], 180, -7, 54, 54, 1, 1);
-      // DrawTransScal(mTex_Icon[3], 430, -7, 54, 54, 1, 1);
-
-      // DrawLblA(mTex_fonts[1], "Play with Friends", -305, 0, COLOR4, 24, ThreeUI.anchors.center, ThreeUI.anchors.center, "center");
-      // DrawLblA(mTex_fonts[2], "Play with 1-3 Computer Bots", 0, 0, COLOR4, 24, ThreeUI.anchors.center, ThreeUI.anchors.center, "center");
-      // DrawLblA(mTex_fonts[3], "Make New Friends", 305, 0, COLOR4, 24, ThreeUI.anchors.center, ThreeUI.anchors.center, "center");
-
-
-      // DrawTransScal(mTex_button[0], -290, 200, 256, 64, 1.1, 1);
-      // DrawTransScal(mTex_button[1], 0, 200, 256, 64, 1.1, 1);
-      // DrawTransScal(mTex_button[2], 290, 200, 256, 64, 1.1, 1);
-      // DrawLblA(mTex_fonts[4], "Login", -290, 210, COLOR2, 36, ThreeUI.anchors.center, ThreeUI.anchors.center, "center");
-      // DrawLblA(mTex_fonts[5], "Try it Out", -0, 210, COLOR2, 36, ThreeUI.anchors.center, ThreeUI.anchors.center, "center");
-      // DrawLblA(mTex_fonts[6], "Join the Group", 290, 210, COLOR2, 36, ThreeUI.anchors.center, ThreeUI.anchors.center, "center");
-
-      break;
-    case GAMEOVER:
-      m2D_Background.visible = true; DrawTextureAX(mTex_win, 0, -160, ThreeUI.anchors.center, ThreeUI.anchors.center);
-      DrawTextureAX(mTex_popup, 0, 50, ThreeUI.anchors.center, ThreeUI.anchors.center);
-      DrawTransScal(mTex_top, 0, -310, 1024, 64, 1.6, 1);
-      DrawTextureAX(mTex_ply[0], 50, 50, ThreeUI.anchors.left, ThreeUI.anchors.top);
-      DrawTextureAX(mTex_coinbar, 250, 36, ThreeUI.anchors.left, ThreeUI.anchors.top);
-      DrawTextureAX(mTex_icn[4], 50, 50, ThreeUI.anchors.right, ThreeUI.anchors.top);
-      DrawTextureAX(mTex_icn[6], 150, 50, ThreeUI.anchors.right, ThreeUI.anchors.top);
-      DrawTransScal(mTex_btn[0], -170, 290, 256, 64, 1.1, 1);
-      DrawTransScal(mTex_btn[1], 170, 290, 256, 64, 1.1, 1);
-      DrawLblA(mTex_fonts[1], "1445", 220, 48, COLOR1, 36, ThreeUI.anchors.left, ThreeUI.anchors.top, "center");
-      DrawLblA(mTex_fonts[0], "Jhnson", 190, 90, COLOR2, 40, ThreeUI.anchors.left, ThreeUI.anchors.top, "center");
-      DrawLblA(mTex_fonts[2], "Menu", -170, 300, COLOR2, 40, ThreeUI.anchors.center, ThreeUI.anchors.center, "center");
-      DrawLblA(mTex_fonts[3], "Continue", 170, 300, COLOR2, 40, ThreeUI.anchors.center, ThreeUI.anchors.center, "center");
-      for (let i = 0; i < 4; i++) {
-        DrawLblA(mTex_fonts[4 + i], "Player " + (i + 1), -200, -50 + i * 70, COLOR2, 40, ThreeUI.anchors.center, ThreeUI.anchors.center, "left");
-        DrawLblA(mTex_fonts[8 + i], " " + (i + 1) * 13, 100, -50 + i * 70, COLOR2, 40, ThreeUI.anchors.center, ThreeUI.anchors.center, "center");
-      }
-      break;
-    case GAMEPLAY:
-      m2D_Background.visible = true;
-      m3d_table.visible = true;
-      DrawTextureAX(mTex_icn[1], 50, 50, ThreeUI.anchors.left, ThreeUI.anchors.top);
-      DrawTextureAX(mTex_icn[5], 50, 150, ThreeUI.anchors.left, ThreeUI.anchors.top);
-      DrawTextureAX(mTex_icn[3], 50, 250, ThreeUI.anchors.left, ThreeUI.anchors.top);
-      DrawTextureAX(mTex_icn[2], 50, 50, ThreeUI.anchors.right, ThreeUI.anchors.top);
-      DrawTextureAX(mTex_icn[0], 50, 150, ThreeUI.anchors.right, ThreeUI.anchors.top);
-      DrawTextureAX(mTex_icn[7], 50, 150, ThreeUI.anchors.right, ThreeUI.anchors.top);
-      DrawTextureAX(mTex_icn[8], 50, 150, ThreeUI.anchors.right, ThreeUI.anchors.top);
-      DrawLblA(mTex_fonts[2], "Ramesh", -108, -262, COLOR4, 22, ThreeUI.anchors.center, ThreeUI.anchors.center, "center");
-      DrawLblA(mTex_fonts[3], "Mahesh", 208, 242, COLOR4, 28, ThreeUI.anchors.center, ThreeUI.anchors.center, "center");
-      DrawLblA(mTex_fonts[18], "Kajal", -346, 82, COLOR4, 26, ThreeUI.anchors.center, ThreeUI.anchors.center, "center");
-      DrawLblA(mTex_fonts[19], "Nikhil", 260, -182, COLOR4, 24, ThreeUI.anchors.center, ThreeUI.anchors.center, "center");
-      mTex_fonts[18].rotation = 100;
-      mTex_fonts[19].rotation = 80;
-      setGameCards();
-      mCube.forEach((element) => {
-        element.group.visible = true;
-      });
-      break;
-  }
-}
-
 function Handle_Menu(sel) {
   console.log("sel = " + sel);
 }
@@ -473,10 +320,6 @@ var roAnim = 0;
 var roRad = 0;
 var roInc = 0.02;
 function Draw_Landing() {
-  // DrawTransScal(mTex_button[0], -290, 200, 256, 64, mSel == 1 ? 1.15 : 1.1, mSel == 1 ? 0.8 : 1);
-  // DrawTransScal(mTex_button[1], 0, 200, 256, 64, mSel == 2 ? 1.15 : 1.1, mSel == 2 ? 0.8 : 1);
-  // DrawTransScal(mTex_button[2], 290, 200, 256, 64, mSel == 3 ? 1.15 : 1.1, mSel == 3 ? 0.8 : 1);
-
   DrawTransScal(mTex_BTN0[0], 220, 100, 166, 102, mSel == 1 ? 1.15 : 1.1, mSel == 1 ? 0.8 : 1);
   DrawTransScal(mTex_BTN0[1], 220, 260, 166, 102, mSel == 2 ? 1.15 : 1.1, mSel == 2 ? 0.8 : 1);
   DrawTransScal(mTex_BTN1[0], 020, 100, 128, 128, mSel == 3 ? 1.15 : 1.1, mSel == 3 ? 0.8 : 1);
@@ -484,17 +327,17 @@ function Draw_Landing() {
   DrawTransScal(mTex_BTN1[2], 020, 260, 128, 128, mSel == 5 ? 1.15 : 1.1, mSel == 5 ? 0.8 : 1);
   DrawTransScal(mTex_BTN1[3], 420, 260, 128, 128, mSel == 6 ? 1.15 : 1.1, mSel == 6 ? 0.8 : 1);
 
-
   roRad += roInc;
   for (var i = 0; i < 10; i++) {
     mCube[i].group.visible = roAnim == i;
   }
-  mCube[roAnim].group.rotation.set(rx, roRad, ry);
+  mCube[roAnim].group.rotation.set(0, roRad, 0);
   if (roRad > Math.PI * .6) {
     roRad = -Math.PI * .4;
     roAnim += 1;
     roAnim %= 10;
   }
+  mCube[roAnim].group.position.set(-13.5, 7.4, 36.5);
 }
 
 function Handle_Landing(type) {
@@ -525,14 +368,14 @@ function Handle_Landing(type) {
         setScreen(GAMEREG);
         break;
     }
-    if (mSel > 0 && mSel < 4) {
-      m2D_Background.position.set(0, 14, -10);
-      m2D_Background.traverse(function (child) {
-        if (child.isMesh) {
-          child.material.map = mTex_BG[0];
-        }
-      });
-    }
+    // if (mSel > 0 && mSel < 4) {
+    //   m2D_Background.position.set(0, 14, -10);
+    //   m2D_Background.traverse(function (child) {
+    //     if (child.isMesh) {
+    //       child.material.map = mTex_BG[0];
+    //     }
+    //   });
+    // }
     mSel = 0;
   }
 }
@@ -562,7 +405,51 @@ function Handle_Login(type) {
 }
 
 function Draw_Registration() {
-  DrawTransScal(mTex_button[0], 0, 206, 256, 64, mSel == 1 ? 1.4 : 1.3, mSel == 1 ? 0.8 : 1);
+  var sety = -60;
+  mPlan_Green.scale.set(2.0, 2.0, 1);
+  mPlan_Green.position.set(-32, 9, .1);
+  DrawTransScal(mTex_flower_fullcolor, -350, -50, 512, 512, .72, 1);
+  DrawLblA(mTex_Cookie[0], "Join the Mahj Group!", 200, -300, COLOR3, 56, ThreeUI.anchors.center, ThreeUI.anchors.center, "center");
+  DrawTransScal(mTex_gold_stroke, 200, -260, 512, 64, .8, 1);
+
+  DrawLblA(mTex_fonts[0], "Play Free for 2 weeks...unlimited games!", 200, -210, COLOR3, 29, ThreeUI.anchors.center, ThreeUI.anchors.center, "center");
+  DrawTransScal(mTex_BTN0[0], 200, 60 + sety, 200, 40, mSel == 1 ? 1.15 : 1.1, mSel == 1 ? 0.8 : 1);
+  DrawLblA(mTex_fonts[1], "Begin Free Trial", 200, 67 + sety, COLOR4, 24, ThreeUI.anchors.center, ThreeUI.anchors.center, "center");
+
+
+
+  DrawLblA(mTex_fontsBold[0], "Become a Member", 200, 120 + sety, COLOR3, 34, ThreeUI.anchors.center, ThreeUI.anchors.center, "center");
+
+  DrawLblA(mTex_fonts[2], "Monthly $ 7.50", -10, 167 + sety, COLOR3, 24, ThreeUI.anchors.center, ThreeUI.anchors.center, "left");
+  DrawLblA(mTex_fonts[3], "Annually $75.00 ($6.25/month)", 190, 167 + sety, COLOR3, 24, ThreeUI.anchors.center, ThreeUI.anchors.center, "left");
+  DrawLblA(mTex_fonts[4], "Automatically renew*", -10, 207 + sety, COLOR3, 24, ThreeUI.anchors.center, ThreeUI.anchors.center, "left");
+
+  DrawTransScal(mTex_radio_off, -35, 160 + sety, 64, 64, .82, 1);
+  DrawTransScal(mTex_radio_on, 155, 160 + sety, 64, 64, .82, 1);
+  DrawTransScal(mTex_toggle_on, -42, 200 + sety, 64, 64, .82, 1);
+
+  DrawTransScal(mTex_Icon[0], -40, 247 + sety, 44, 44, 1, 1);
+  DrawLblA(mTex_fonts[5], "A portion of every annual membership goes to charity.\nFor more information click here (takes you to faq)", 10, 247 + sety, COLOR3, 20, ThreeUI.anchors.center, ThreeUI.anchors.center, "left");
+  DrawLblA(mTex_fonts[6], "*If you wish to cancel your membership you must do so 48 hours prior to renewal\ndate. Your membership will be valid through your paid subscription date.", -20, 292 + sety, COLOR3, 16, ThreeUI.anchors.center, ThreeUI.anchors.center, "left");
+
+  DrawTransScal(mTex_BTN0[1], 200, 340 + sety, 200, 40, mSel == 1 ? 1.15 : 1.1, mSel == 1 ? 0.8 : 1);
+  DrawLblA(mTex_fonts[7], "Become a Member", 200, 347 + sety, COLOR4, 24, ThreeUI.anchors.center, ThreeUI.anchors.center, "center");
+
+
+  DrawLblA(mTex_fonts[8], "Already Have an Account?", -33 + 200, 392 + sety, COLOR1, 24, ThreeUI.anchors.center, ThreeUI.anchors.center, "center");
+  DrawLblA(mTex_fonts[9], "Login", 117 + 200, 392 + sety, COLOR3, 24, ThreeUI.anchors.center, ThreeUI.anchors.center, "center");
+
+  // DrawLblA(mTex_fonts[10], "Keep me logged in", 200, 347 + sety, COLOR4, 24, ThreeUI.anchors.center, ThreeUI.anchors.center, "center");
+  // DrawLblA(mTex_fonts[11], "Refer a Friend", 200, 347 + sety, COLOR4, 24, ThreeUI.anchors.center, ThreeUI.anchors.center, "center");
+
+
+
+
+
+
+  // mTex_radio_off, mTex_radio_on, mTex_toggle_off, mTex_toggle_on
+
+
 }
 
 function Handle_Registration(type) {
@@ -576,7 +463,11 @@ function Handle_Registration(type) {
   }
   console.log("mSel = " + mSel);
   if (type == 2) {
-    switch (mSel) { case 1: setScreen(GAMEMENU); break; case 3: setScreen(GAMELOGIN); break; }mSel = 0;
+    switch (mSel) {
+      case 1: setScreen(GAMELANDING); break;
+      case 3: setScreen(GAMELOGIN); break;
+    }
+    mSel = 0;
   }
 }
 
@@ -633,7 +524,6 @@ function Draw_Gameplay() {
   DrawTransScal(mTex_icn[0], 50, 150, 64, 64, mSel == 1 ? 1.4 : 1.3, mSel == 1 ? 0.8 : 1);
   DrawTransScal(mTex_icn[7], 50, 250, 64, 64, mSel == 8 ? 1.4 : 1.3, mSel == 8 ? 0.8 : 1);
   DrawTransScal(mTex_icn[8], 50, 350, 64, 64, mSel == 9 ? 1.4 : 1.3, mSel == 9 ? 0.8 : 1);
-
 }
 
 function Handle_Play(type) {

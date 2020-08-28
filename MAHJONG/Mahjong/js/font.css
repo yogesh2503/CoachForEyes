@@ -1,12 +1,18 @@
 @font-face {
+  font-family: 'CabinCondensed-Bold';
+  src: url('../assets/CabinCondensed-Bold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
   font-family: 'CabinCondensed';
   src: url('../assets/CabinCondensed.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
 @font-face {
-  font-family: 'Cookie';
-  src: url('../assets/Cookie.ttf') format('truetype');
+  font-family: 'RougeScript';
+  src: url('../assets/RougeScript.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
