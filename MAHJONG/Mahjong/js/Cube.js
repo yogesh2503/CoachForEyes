@@ -37,8 +37,8 @@ class Cube {
       this.group.rotation.set(Math.PI, -Math.PI * 0.5, Math.PI * 0.5);
     if (dir == UP) this.group.rotation.set(Math.PI * 0.5, Math.PI, Math.PI * 0);
   }
-  setNew(_x, _y, _z, dir) {
-    this.group.scale.set(0.66, 0.66, 0.66);
+  setNew(_x, _y, _z, dir, scl) {
+    this.group.scale.set(scl, scl, scl);
     this.group.position.set(_x, _y, _z);
     if (dir == BOTTOM)
       this.group.rotation.set(-Math.PI * 0, Math.PI * 0, Math.PI * 0);

@@ -7,6 +7,8 @@ var m3d_table, m3d_tableTop;
 var mColors = ['#ffffff', '#015293', '#ff451e', '#0f9270', '#7128c0', '#fed932', '#990100', '#ff8c01', '#929292'];
 var tex_Back, tex_planBack;
 var tablebase = Array();
+var mRack = new THREE.Group();
+var mRacka, mRackb;
 const BASEURL = '';
 
 function loadobj() {
@@ -40,7 +42,21 @@ function loadobj() {
         mTex_BG.push(textureLoader.load(BASEURL + 'assets/bg' + i + '.jpg'));
     }
 
-    m2D_Background = new THREE.Mesh(new THREE.PlaneGeometry(120, 56), new THREE.MeshBasicMaterial({ map: mTex_BG[0] }));
+    m2D_Background = new THREE.Mesh(new THREE.PlaneGeometry(100, 56), new THREE.MeshBasicMaterial({ map: mTex_BG[1] }));
+
+    mRacka = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.MeshBasicMaterial({ color: 0x0d725a }));
+    mRackb = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.MeshBasicMaterial({ color: 0x119475 }));
+
+    mRacka.position.set(0, 0, 0);
+    mRacka.scale.set(15, 1, 1);
+    mRackb.scale.set(15, .5, 1);
+    mRackb.position.set(0, 1, .5);
+    mRackb.rotation.set(.5 * Math.PI, 0, 0);
+    mRack.add(mRacka);
+    mRack.add(mRackb);
+    mRack.visible = false;
+
+
     var loader = new THREE.OBJLoader(manager);
     loader.load(BASEURL + 'assets/cube2.obj', function (obj) { m3d_cube = obj; }, onProgress, onError);
     loader.load(BASEURL + 'assets/mohjong.obj', function (obj) { m3d_table = obj; }, onProgress, onError);

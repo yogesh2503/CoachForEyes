@@ -59,7 +59,7 @@ function init() {
     scene.add(meshLoading);
 
     var manager = new THREE.LoadingManager(loadModel);
-    manager.onProgress = function(item, loaded, total) { /*console.log( item, loaded, total );*/ };
+    manager.onProgress = function (item, loaded, total) { /*console.log( item, loaded, total );*/ };
 
     function onProgress(xhr) {
         if (xhr.lengthComputable) {
@@ -68,7 +68,7 @@ function init() {
         }
     }
 
-    function onError() {}
+    function onError() { }
     var textureLoader = new THREE.TextureLoader(manager);
 
     tex_empty = textureLoader.load("assets/empty.png");
@@ -81,7 +81,7 @@ function init() {
 
     mPlanBackground = createPlanMesh();
     scene.add(mPlanBackground);
-    mPlanBackground.traverse(function(child) { if (child.isMesh) { child.material.map = texture; } });
+    mPlanBackground.traverse(function (child) { if (child.isMesh) { child.material.map = texture; } });
     mPlanBackground.scale.set(216 * .27, 384 * .27, 50);
     mPlanBackground.visible = true;
     mPlanBackground.position.set(0, 0, 0);
@@ -102,10 +102,10 @@ function init() {
     }
 
 
-    AssetLoader.progressListener = function(progress) {
+    AssetLoader.progressListener = function (progress) {
         console.info('Progress: ' + (progress * 100) + '%');
     };
-    AssetLoader.load(function() {
+    AssetLoader.load(function () {
         console.log("AssetLoader~~~~~~~~" + gameUI);
         mTex_logo = loadUIRect();
         mTex_logo.visible = false;
@@ -276,10 +276,6 @@ function touchEvent(e, type) {
                 y = (event.clientY - boundingRect.top) * (elem.height / boundingRect.height);
             mouse.x = (x / CANVAS_WIDTH) * 2 - 1;
             mouse.y = -(y / CANVAS_HEIGHT) * 2 + 1;
-
-
-
-
         }
         raycaster.setFromCamera(mouse, camera);
     }
@@ -377,7 +373,7 @@ function setScreen(scr) {
             for (let i = 0; i < mFlakeSpeed.plans.length && i < 4; i++) {
                 mFlakeSpeed.plans[i].visible = true;
             }
-            mFlakeSpeed.plans[0].traverse(function(child) { if (child.isMesh) { child.material.map = tex_empty1; } });
+            mFlakeSpeed.plans[0].traverse(function (child) { if (child.isMesh) { child.material.map = tex_empty1; } });
             mFlakeSpeed.plans[0].position.set(-10, -5, 0);
             mFlakeSpeed.plans[1].position.set(-17, 15, 0);
             mFlakeSpeed.plans[2].position.set(7, 7, 0);
@@ -434,4 +430,4 @@ function setScreen(scr) {
     }
 }
 
-function loadModel() {}
+function loadModel() { }

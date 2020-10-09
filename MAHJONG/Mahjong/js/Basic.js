@@ -7,7 +7,9 @@ const GAMEOVER = 4;
 const GAMEREG = 5;
 const GAMELEADER = 6;
 const GAMELANDING = 7;
-
+const GAMEPROFILE = 8;
+const GAMEJOIN = 9;
+const GAMEFRIEND = 10;
 const POWERCOUNT = 1000;
 const COLOR1 = "#a71c20";
 const COLOR2 = "#cda34a";
@@ -69,6 +71,43 @@ var regids = {
   ],
 };
 
+var recieveids = {
+  id: "httdivrec",
+  css: "center-block3",
+  inputbox: [
+    {
+      placeholder: "Enter First Name",
+      id: "httrecname",
+      lbl: "Firs Name",
+      type: "text",
+    },
+    {
+      placeholder: "Enter Last Name",
+      id: "httreclast",
+      lbl: "Last Name",
+      type: "text",
+    },
+    {
+      placeholder: "Enter Email Address",
+      id: "httregadd",
+      lbl: "Email Address",
+      type: "text",
+    },
+
+  ],
+};
+var searchids = {
+  id: "httdivrec",
+  css: "center-block3",
+  inputbox: [
+    {
+      placeholder: "Find friends usarname",
+      id: "httrecname",
+      lbl: "friends Name",
+      type: "text",
+    },
+  ],
+};
 function addInputBox(obj) {
   var input_div = document.createElement("div");
   input_div.setAttribute("class", obj.css);
@@ -86,6 +125,7 @@ function addInputBox(obj) {
   input_div.style.display = "none";
   return input_div;
 }
+
 
 function inputBox(placeholder, id, lbl, type) {
   console.log("inputBox ~~~~~", placeholder, id, lbl);
@@ -255,6 +295,20 @@ function Rect2RectIntersection(ax, ay, adx, ady, bx, by, bdx, bdy) {
   return false;
 }
 
+function circir(x1, y1, r1, x2, y2, r2) {
+  if (r1 + r2 > Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2))) {
+    return true;
+  }
+  return false;
+}
+
+function CircRectsOverlap(CRX, CRY, CRDX, CRDY, centerX, centerY, radius) {
+  if ((Math.abs(centerX - CRX) <= (CRDX + radius)) && (Math.abs(centerY - CRY) <= (CRDY + radius)))
+    return true;
+
+  return false;
+}
+
 function random(min, max) {
   return min + Math.floor(Math.random() * (max - min));
 }
@@ -276,8 +330,8 @@ function upWithKeyboard(e) {
 }
 
 function dealWithKeyboard(e) {
-  var vs = 1,
-    rs = 0.1;
+  var vs = 1.0,
+    rs = .1;
   switch (e.keyCode) {
     case 188:
       // Handle_Menu(18);
@@ -313,16 +367,16 @@ function dealWithKeyboard(e) {
       rx = rx + rs;
       break;
     case 52:
-      ry = ry + rs;
-      break;
-    case 53:
       ry = ry - rs;
       break;
+    case 53:
+      ry = ry + rs;
+      break;
     case 55:
-      rz = rz + rs;
+      rz = rz - rs;
       break;
     case 56:
-      rz = rz - rs;
+      rz = rz + rs;
       break;
     case 57:
       sx = sy = sz = 0;
@@ -332,8 +386,8 @@ function dealWithKeyboard(e) {
       // gamereset();
       break;
   }
-  console.log("sx = " + sx + ", sy = " + sy + ", sz =" + sz);
-  console.log(e.keyCode + " rx = " + rx + ", ry = " + ry + ", rz =" + rz);
+  console.log("sx = " + sx.toFixed(2) + ", sy = " + sy.toFixed(2) + ", sz =" + sz.toFixed(2));
+  console.log(e.keyCode + " rx = " + rx.toFixed(2) + ", ry = " + ry.toFixed(2) + ", rz =" + rz.toFixed(2));
 }
 
 function createColor() {

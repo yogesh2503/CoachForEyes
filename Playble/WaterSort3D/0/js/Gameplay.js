@@ -14,8 +14,6 @@ function init() {
     mPop = new PushPop();
     var geometry = new THREE.PlaneGeometry(200, 400);
     var material = new THREE.MeshBasicMaterial({ map: loadTexture(BG_64) });
-
-
     for (var i = 0; i < 5; i++) {
       if(i ==0)
         mPlan_Home.push(new THREE.Mesh(geometry, material));
@@ -394,7 +392,7 @@ function Handle_Game(type) {
             selObj(no);
 
             if (mPlayer.lvl == 4) {
-               callAppLink("iOS");
+               /*callAppLink("iOS");*/
             }
         }
         if (type == 1) {
