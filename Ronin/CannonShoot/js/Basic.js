@@ -1,5 +1,9 @@
 var GameScreen = 0;
-const GAMEPLAY = 2;
+const GAMEMENU = 0;
+const GAMEPLAY = 1;
+const GAMEOVER = 2;
+const GAMEHELP = 3;
+const GAMELOAD = 4;
 var sx = 0, sy = 0, sz = 0, rx = 0, ry = 0, rz = 0;
 function loadUI(gameUI, assetpath, x, y, clickval) {
     var sprite = gameUI.createSprite(assetpath);
@@ -20,7 +24,16 @@ function loadUI(gameUI, assetpath, x, y, clickval) {
     }
     return sprite;
 }
+function GetAngle(d, e) {
 
+	if (d == 0)
+		return e >= 0 ? Math.PI / 2 : -Math.PI / 2;
+	else if (d > 0)
+		return Math.atan(e / d);
+	else
+		return Math.atan(e / d) + Math.PI;
+
+}
 function createTexts(gameUI, text, size, color, anchorx, anchory, textAlign, tpye) {
     var lbltext = gameUI.createText(text, size, tpye, color);
     lbltext.anchor.x = anchorx;
@@ -120,10 +133,10 @@ function dealWithKeyboard(e) {
     console.log("sx = " + sx + ", sy = " + sy + ", sz =" + sz);
     console.log(e.keyCode + " rx = " + rx + ", ry = " + ry + ", rz =" + rz);
 }
-var clr = 5;
+var clr = 6;
 function createColor() {
     clr++;
-    var frequency = 0.03;
+    var frequency = 0.45;
     r = Math.floor(Math.sin(frequency * clr + 0) * 127 + 128);
     g = Math.floor(Math.sin(frequency * clr + 2) * 127 + 128);
     b = Math.floor(Math.sin(frequency * clr + 4) * 127 + 128);

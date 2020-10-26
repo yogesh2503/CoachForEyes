@@ -94,8 +94,16 @@ class Game {
             vertexShader: vertexShader(),
         })
 
+
+        var materialShad = new THREE.MeshLambertMaterial({
+            side: THREE.DoubleSide,
+            color: 0xff0ff0
+
+        });
+
+
         const plane = new THREE.PlaneBufferGeometry(2, 2);
-        this.quad = new THREE.Mesh(plane, this.FinalShader)
+        this.quad = new THREE.Mesh(plane, materialShad)
         this.postScene.add(this.quad);
 
     }
@@ -206,12 +214,15 @@ class Game {
         this.scene.background = new THREE.Color(0x000000);
         this.camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 1000);
         this.camera.position.set(0, 1, 0);//30
-
-
-        this.shaderAdd();
+        // this.shaderAdd();
         this.renderer = new THREE.WebGLRenderer();
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(this.renderer.domElement);
+
+        shaderAdd(this);
+        initObj(this);
+
+
         this.gameUI = new ThreeUI(this.renderer.domElement, 1920);
         this.clock = new THREE.Clock();
         this.coords = new THREE.Vector2();
@@ -464,9 +475,12 @@ class Game {
         const game = this;
         this.delta = this.clock.getDelta();
         // requestAnimationFrame(function () { game.animate(); });
-        this.renderer.render(this.scene, this.camera);
+        // this.renderer.render(this.scene, this.camera);
+        // renderCall(this);
+        update(this);
+
         this.gameUI.render(this.renderer);
-        this.renderCall();
+        // this.renderCall();
         this.counter++;
 
         if (this.start === undefined) {
