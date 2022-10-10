@@ -23,9 +23,16 @@ class Game {
         this.raycaster = new THREE.Raycaster();
         this.mSel = 0;
         var manager = new THREE.LoadingManager(loadModel);
-        manager.onProgress = function (item, loaded, total) { };
-        function onProgress(xhr) { }
-        function onError() { }
+        manager.onProgress = function ( url, itemsLoaded, itemsTotal ) {
+
+            console.log( 'Loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' );
+        
+        };
+        manager.onError = function ( url ) {
+
+            console.log( 'There was an error loading ' + url );
+        
+        };
         var shadowTex = loadTexture(SHADOW_64);
         var backText = loadTexture(BACK_64);
         var dishtxt = loadTexture(DISH2_64);
